@@ -1,0 +1,11 @@
+overlay                 chain
+chain-uri               <%= uri %>
+chain-rebind-as-user    TRUE
+chain-idassert-bind     bindmethod="simple"
+                        binddn="<%= binddn %>"
+                        credentials="<%= credentials %>"
+                        mode="self"
+<% if use_ssl == "yes" -%>                        starttls=yes
+                        tls_reqcert=never
+chain-tls               start
+<% end -%>

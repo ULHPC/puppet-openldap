@@ -1,0 +1,10 @@
+# Syncrepl configuration
+
+# NOTE: 
+# the provider configuration contains no reference to any consumers
+
+# define as provider using the syncprov overlay
+# (last directives in database section)
+overlay syncprov
+# contextCSN saved to database every 100 updates or ten minutes
+syncprov-checkpoint 100 10

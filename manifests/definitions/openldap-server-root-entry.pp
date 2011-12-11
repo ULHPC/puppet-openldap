@@ -1,0 +1,71 @@
+# File::      <tt>openldap-server-root-entry.pp</tt>
+# Author::    Hyacinthe Cartiaux (<hyacinthe.cartiaux@uni.lu>)
+# Copyright:: Copyright (c) 2011 Hyacinthe Cartiaux
+# License::   GPLv3
+# ------------------------------------------------------------------------------
+# = Define: openldap::server::root-entry
+#
+# Create the root entry in your DIT
+# You are expected to use as name when defining this resource the dn of the rootDSE
+#
+# == Parameters:
+#
+# [*ensure*]
+#   'present' or 'absent'
+#
+# [*db_number*]
+#   The number of your database, default is 0
+#
+# [*dc*], [*o*]
+#   Name of the organization
+#
+# [*desc*]
+#   Description of the entry
+#
+# = Usage:
+#
+#          openldap::server::root-entry { "dc=uni,dc=lu":
+#                db_number => "1",
+#                dc        => "uni",
+#                o         => "uni",
+#                desc      => "Root of the uni.lu ldap directory"
+#          }
+#
+# == Warnings
+#
+# /!\ Always respect the style guide available
+# here[http://docs.puppetlabs.com/guides/style_guide]
+#
+# [Remember: No empty lines between comments and class definition]
+#
+define openldap::server::root-entry(
+    $ensure    = 'present',
+    $db_number = "${openldap::params::default_db}",
+    $dc,
+    $o,
+    $desc
+)
+{
+
+    include openldap::params
+
+    $dn = $name
+
+    file { "${openldap::params::ldifdir}/root_${dc}.ldif":
+       ensure  => $ensure,
+       owner   => "${openldap::params::databasedir_owner}",
+       group   => "${openldap::params::databasedir_group}",
+       mode    => "${openldap::params::databasedir_mode}",
+       content => template("openldap/ldif/root.ldif.erb")
+    }
+
+    if ($ensure == 'present')
+    {
+        openldap::server::slapadd { "slapadd ${openldap::params::ldifdir}/root_${dc}.ldif":
+          db_number         => "${db_number}",
+          configfile_server => "${openldap::params::configfile_server}",
+          ldif_file         => "${openldap::params::ldifdir}/root_${dc}.ldif"
+        }
+    }
+}
+

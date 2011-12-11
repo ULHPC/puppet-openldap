@@ -1,0 +1,14 @@
+# Syncrepl configuration
+# attrs : both user (*) and operational (+) attributes required
+
+syncrepl rid=<%= rid %>
+    provider=<%= provider %>
+    type=refreshAndPersist
+    retry="5 5 300 +"
+    searchbase="<%= searchbase %>"
+    attrs="*,+"
+    bindmethod=simple
+    binddn="<%= binddn %>"
+    credentials=<%= credentials %>
+
+updateref <%= provider %>
