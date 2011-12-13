@@ -63,7 +63,7 @@ define openldap::server::sync-consumer(
 
     include openldap::params
 
-    $fragment_db = (4 + $db_number) * 10 + 3
+    $fragment_db = (4 + $db_number) * 10 + 9
     concat::fragment { "slapd_sync_consumer_${db_number}":
         target  => "${openldap::params::configfile_server}",
         ensure  => "${openldap::server::ensure}",

@@ -80,10 +80,31 @@ class openldap::params {
         default => "${openldap_port}",
     }
 
-    $modules = $openldap_array_variable ? {
+    $modules = $openldap_modules ? {
         ''      => ['back_ldap', 'back_bdb', 'syncprov'],
-        default => $openldap_array_variable,
+        default => $openldap_modules,
     }
+
+    $unix_auth = $openldap_unix_auth ? {
+        ''      => 'no',
+        default => $openldap_unix_auth,
+    }
+
+    $base_passwd = $openldap_base_passwd ? {
+        ''      => "ou=People,${suffix}",
+        default => $openldap_base_passwd,
+    }
+
+    $base_group = $openldap_base_group ? {
+        ''      => "ou=Groups,${suffix}",
+        default => $openldap_base_group,
+    }
+
+    $scope = $openldap_scope ? {
+        ''      => "one",
+        default => $openldap_scope,
+    }
+
 
     # salt value used for slappasswd
     $salt = "fs5Z"
@@ -106,6 +127,12 @@ class openldap::params {
     $packagename_client = $::operatingsystem ? {
         /(?i-mx:ubuntu|debian)/ => 'ldap-utils',
         default                 => 'ldap-utils',
+    }
+
+    $packagename_unix_auth = $::operatingsystem ? {
+        /(?i-mx:ubuntu|debian)/ => ['libnss-ldap',
+                                    'libpam-ldap'],
+        default                 => [],
     }
 
     $servicename = $::operatingsystem ? {
@@ -138,6 +165,14 @@ class openldap::params {
         default => '/etc/ldap/ldap.conf',
     }
 
+    $configfile_pam = $::operatingsystem ? {
+        default => '/etc/pam_ldap.conf',
+    }
+
+    $configfile_nss = $::operatingsystem ? {
+        default => '/etc/libnss-ldap.conf',
+    }
+
     $ldifdir = $::operatingsystem ? {
         default => '/var/lib/ldif',
     }
@@ -146,16 +181,24 @@ class openldap::params {
         default => '0640',
     }
 
-    $configfile_client_mode = $::operatingsystem ? {
-        default => '0640',
+    $configfile_group = $::operatingsystem ? {
+        default => 'openldap',
     }
 
     $configfile_owner = $::operatingsystem ? {
         default => 'root',
     }
 
-    $configfile_group = $::operatingsystem ? {
-        default => 'openldap',
+    $configfile_client_mode = $::operatingsystem ? {
+        default => '0644',
+    }
+
+    $configfile_client_group = $::operatingsystem ? {
+        default => 'root',
+    }
+
+    $configfile_client_owner = $::operatingsystem ? {
+        default => 'root',
     }
 
     $databasedir = $::operatingsystem ? {

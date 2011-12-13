@@ -20,9 +20,8 @@
 # LDAP Defaults
 #
 
-BASE <%= base %>
 URI	<%= uri %>
-#URI	ldap://ldap.example.com ldap://ldap-master.example.com:666
+BASE <%= base %>
 ldap_version 3
 
 <% if scope.lookupvar('openldap::client::use_ssl') == 'yes' %>
@@ -31,19 +30,15 @@ SSL	start_tls
 TLS_REQCERT never
 <% end %>
 
-#SIZELIMIT	12
-#TIMELIMIT	15
-#DEREF		never
-
+<% if scope.lookupvar('openldap::client::unix_auth') == 'yes' %>
 # NSS
-#rootbinddn cn=admin,dc=uni,dc=lu
-#
-#nss_base_passwd        ou=People,dc=uni,dc=lu?one
-#nss_base_shadow        ou=People,dc=uni,dc=lu?one
-#nss_base_group         ou=Groups,dc=uni,dc=lu?one
+nss_base_passwd        <%= scope.lookupvar('openldap::client::base_passwd') %>?<%= scope.lookupvar('openldap::client::scope') %>
+nss_base_shadow        <%= scope.lookupvar('openldap::client::base_passwd') %>?<%= scope.lookupvar('openldap::client::scope') %>
+nss_base_group         <%= scope.lookupvar('openldap::client::base_group')  %>?<%= scope.lookupvar('openldap::client::scope') %>
 
 #PAM options
-#pam_password    md5
-#pam_filter      objectclass=posixAccount
-#pam_min_uid     9000
-#pam_max_uid     0
+pam_password    md5
+pam_filter      objectclass=posixAccount
+pam_min_uid     9000
+pam_max_uid     0
+<% end %>

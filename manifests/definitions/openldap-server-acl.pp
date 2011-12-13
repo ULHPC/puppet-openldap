@@ -21,6 +21,9 @@
 # [*anonymous*]
 #   Authorize anonymous read (yes) or not (no)
 #
+# [*order*]
+#   Number of the ACL, used to order ACLs in the configuration file
+#
 # = Usage:
 #
 #          openldap::server::acl { "password protection":
@@ -28,7 +31,8 @@
 #                what      => 'userPassword,shadowLastChange',
 #                who       => { 'cn=admin,dc=uni,dc=lu' => 'write',
 #                               'self' => 'write' },
-#                anonymous => "no"
+#                anonymous => "no",
+#                order     => 0
 #          }
 #
 # == Warnings
@@ -42,7 +46,8 @@ define openldap::server::acl(
     $db_number = '1',
     $what,
     $who,
-    $anonymous = 'no'
+    $anonymous = 'no',
+    $order
 )
 {
 
@@ -52,7 +57,7 @@ define openldap::server::acl(
           fail("openldap::server::acl 'anonymous' parameter must be set to either 'yes' or 'no'")
     }
 
-    $fragment_number = (4 + $db_number) * 10 + 2
+    $fragment_number = (4 + $db_number) * 10 + 2 + $order
     concat::fragment { "slapd_acl_${name}":
          target  => "${openldap::params::configfile_server}",
          ensure  => "${openldap::server::ensure}",

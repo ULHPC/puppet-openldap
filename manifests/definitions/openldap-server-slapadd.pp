@@ -48,7 +48,7 @@ define openldap::server::slapadd(
                   slapadd -f ${configfile_server} -n ${db_number} -l ${ldif_file} ;
                   chown -R ${openldap::params::databasedir_owner}:${openldap::params::databasedir_group} ${openldap::params::databasedir}
                   touch ${ldif_file}.puppet ; 
-                  service slapd start",
+                  service slapd start || true",
       unless  => "test -f ${ldif_file}.puppet",
       user => "root",
       group => "root",
