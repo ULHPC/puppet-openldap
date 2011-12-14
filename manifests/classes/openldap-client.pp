@@ -185,18 +185,14 @@ class openldap::client::debian inherits openldap::client::common {
      ## PAM
      # /!\ Debian squeeze : pam configuration files are edited during package installation
 
-     # augeas { "auth-pam_ldap":
-     #    context => "/files/etc/pam.d/common-auth",
-     #    changes => [
-     #            "ins 100000 after *[type='auth'][module='pam_unix.so']",
-     #            "set 100000/type auth",
-     #            "set 100000/control sufficient",
-     #            "set 100000/module pam_ldap.so",
-     #            "set 100000/argument use_first_pass"
-     #    ],
-     #    onlyif  => "match *[type='auth'][module='pam_ldap.so'] size == 0",
-     # }
-
+     # use_authtok option prevent password changing with passwd
+     augeas { "delete use_authtok option":
+         context => '/files/etc/pam.d/common-password/*[type = "password"][module = "pam_ldap.so"]',
+         changes => [
+             "rm argument[1]",
+         ],
+         onlyif  => 'get argument[1] == "use_authtok"'
+     }
 }
 
 # ------------------------------------------------------------------------------
