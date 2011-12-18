@@ -105,10 +105,6 @@ class openldap::params {
         default => $openldap_scope,
     }
 
-
-    # salt value used for slappasswd
-    $salt = "fs5Z"
-
     $default_db = $::operatingsystem ? {
         /(?i-mx:ubuntu|debian)/ => '1', # 0 is config, 1 is first user db
         default                 => '1', # to test ?
@@ -215,6 +211,9 @@ class openldap::params {
     $databasedir_group = $::operatingsystem ? {
         default => 'openldap',
     }
+
+    # Temporary fixed salt value for slappasswd #
+    $salt = "Kae5v"
 
 }
 

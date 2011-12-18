@@ -25,6 +25,7 @@ dbconfig set_lk_max_lockers 1500
 # Indexing options
 index   uid,uidNumber,gidNumber,memberUid,objectClass   eq
 index   cn,sn                                           pres,eq,sub
+# Attributes used for replication
 index   entryCSN,entryUUID                              eq
 
 # Checkpoint the BerkeleyDB database periodically in case of system

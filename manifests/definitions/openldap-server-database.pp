@@ -92,7 +92,7 @@ define openldap::server::database(
         order   => $fragment_db,
     }
 
-    $fragment_syncprov = $fragment_db + 1
+    $fragment_syncprov = $fragment_db + 9
     if ("${syncprov}" == 'yes')
     {
         concat::fragment { "slapd_syncprov_${db_number}":

@@ -29,7 +29,8 @@
 #
 #          openldap::server::admin-entry { "cn=admin,dc=uni,dc=lu":
 #                cn         => "admin",
-#                desc       => "Administrator of this ldap server"
+#                desc       => "Administrator of this ldap server",
+#                admin_pwd  => "<RANDOM AND SECURE PASSWORD>"
 #          }
 #
 # == Warnings
@@ -53,7 +54,7 @@ define openldap::server::admin-entry(
     $dn = $name
     $hashed_password = slappasswd("${openldap::params::salt}", $admin_pwd)
 
-    file { "${openldap::params::ldifdir}/admin_${cn}.ldif":
+    file { "${openldap::params::ldifdir}/admin_${dn}.ldif":
        ensure  => $ensure,
        owner   => "${openldap::params::databasedir_owner}",
        group   => "${openldap::params::databasedir_group}",
@@ -62,10 +63,10 @@ define openldap::server::admin-entry(
     }
     if ($ensure == 'present')
     {
-        openldap::server::slapadd { "slapadd ${openldap::params::ldifdir}/admin_${cn}.ldif":
+        openldap::server::slapadd { "slapadd ${openldap::params::ldifdir}/admin_${dn}.ldif":
           db_number         => "${db_number}",
           configfile_server => "${openldap::params::configfile_server}",
-          ldif_file         => "${openldap::params::ldifdir}/admin_${cn}.ldif",
+          ldif_file         => "${openldap::params::ldifdir}/admin_${dn}.ldif",
           require           => Openldap::Server::Root-entry["${openldap::server::suffix}"]
         }
     }

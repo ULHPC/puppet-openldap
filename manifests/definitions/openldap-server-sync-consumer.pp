@@ -53,7 +53,7 @@
 define openldap::server::sync-consumer(
     $provider,
     $db_number = "${openldap::params::default_db}",
-    $ssl       = 'no',
+    $use_ssl   = "${openldap::params::ssl}",
     $rid       = '000',
     $searchbase,
     $binddn,
@@ -64,7 +64,7 @@ define openldap::server::sync-consumer(
     include openldap::params
 
     $fragment_db = (4 + $db_number) * 10 + 9
-    concat::fragment { "slapd_sync_consumer_${db_number}":
+    concat::fragment { "slapd_sync_consumer_${db_number}_${rid}":
         target  => "${openldap::params::configfile_server}",
         ensure  => "${openldap::server::ensure}",
         content => template("openldap/slapd/50_slapd_syncrep.erb"),

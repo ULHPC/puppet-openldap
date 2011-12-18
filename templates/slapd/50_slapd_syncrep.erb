@@ -10,5 +10,9 @@ syncrepl rid=<%= rid %>
     bindmethod=simple
     binddn="<%= binddn %>"
     credentials=<%= credentials %>
+<% if use_ssl == "yes" -%>    starttls=critical
+    tls_reqcert=never<% end -%>
 
+mirrormode on
 updateref <%= provider %>
+

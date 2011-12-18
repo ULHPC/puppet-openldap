@@ -51,7 +51,7 @@ define openldap::server::root-entry(
 
     $dn = $name
 
-    file { "${openldap::params::ldifdir}/root_${dc}.ldif":
+    file { "${openldap::params::ldifdir}/root_${dn}.ldif":
        ensure  => $ensure,
        owner   => "${openldap::params::databasedir_owner}",
        group   => "${openldap::params::databasedir_group}",
@@ -61,10 +61,10 @@ define openldap::server::root-entry(
 
     if ($ensure == 'present')
     {
-        openldap::server::slapadd { "slapadd ${openldap::params::ldifdir}/root_${dc}.ldif":
+        openldap::server::slapadd { "slapadd ${openldap::params::ldifdir}/root_${dn}.ldif":
           db_number         => "${db_number}",
           configfile_server => "${openldap::params::configfile_server}",
-          ldif_file         => "${openldap::params::ldifdir}/root_${dc}.ldif"
+          ldif_file         => "${openldap::params::ldifdir}/root_${dn}.ldif"
         }
     }
 }

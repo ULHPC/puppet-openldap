@@ -5,7 +5,7 @@ chain-idassert-bind     bindmethod="simple"
                         binddn="<%= binddn %>"
                         credentials="<%= credentials %>"
                         mode="self"
-<% if use_ssl == "yes" -%>                        starttls=yes
+<% if use_ssl == "yes" -%>                        starttls=critical
                         tls_reqcert=never
 chain-tls               start
 <% end -%>
