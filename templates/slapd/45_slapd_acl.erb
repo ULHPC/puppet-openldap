@@ -3,6 +3,6 @@
 
 <% if what == '*' %>access to *<% else %>access to <%= what %><% end %>
 <% who.each_pair do |key, value| %><% if key == 'self' %>        by self <%= value %>
-<% else %>        by dn="<%= key %>" <%= value %><%end %><% end %>
-<% if anonymous == 'no' %>        by anonymous auth<% else %>        by * read<% end %>
+<% else %>        by dn="<%= key %>" <%= value %>
+<%end %><% end %><% if anonymous == 'no' %>        by anonymous auth<% else %>        by * read<% end %>
 
