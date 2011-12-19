@@ -1,10 +1,12 @@
 # Syncrepl configuration
 # attrs : both user (*) and operational (+) attributes required
+# Sync every ten minutes, always retry
 
 syncrepl rid=<%= rid %>
     provider=<%= provider %>
     type=refreshAndPersist
     retry="5 5 300 +"
+    interval=00:00:10:00
     searchbase="<%= searchbase %>"
     attrs="*,+"
     bindmethod=simple
