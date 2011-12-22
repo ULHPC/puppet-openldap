@@ -1,5 +1,5 @@
 name       'openldap'
-version    '0.0.5'
+version    '0.0.6'
 source     'git-admin.uni.lu:puppet-repo.git'
 author     'Hyacinthe Cartiaux (hyacinthe.cartiaux@uni.lu)'
 license    'GPL v3'
