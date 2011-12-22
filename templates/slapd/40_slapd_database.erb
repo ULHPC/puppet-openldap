@@ -17,7 +17,7 @@ directory       "/var/lib/ldap/<%= name %>"
 
 # For the Debian package we use 2MB as default but be sure to update this
 # value if you have plenty of RAM
-dbconfig set_cachesize 0 2097152 0
+dbconfig set_cachesize 0 2097152000 0
 dbconfig set_lk_max_objects 1500
 dbconfig set_lk_max_locks 1500
 dbconfig set_lk_max_lockers 1500
@@ -25,6 +25,7 @@ dbconfig set_lk_max_lockers 1500
 # Indexing options
 index   uid,uidNumber,gidNumber,memberUid,objectClass   eq
 index   cn,sn                                           pres,eq,sub
+index   uniqueMember                                    eq,pres
 # Attributes used for replication
 index   entryCSN,entryUUID                              eq
 

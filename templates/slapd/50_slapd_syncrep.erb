@@ -15,6 +15,5 @@ syncrepl rid=<%= rid %>
 <% if use_ssl == "yes" -%>    starttls=critical
     tls_reqcert=never<% end -%>
 
-mirrormode on
 updateref <%= provider %>
 
