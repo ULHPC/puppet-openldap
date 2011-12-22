@@ -20,25 +20,28 @@
 # LDAP Defaults
 #
 
-URI	<%= uri %>
-BASE <%= base %>
+URI          <%= uri %>
+BASE         <%= base %>
 ldap_version 3
+
+DEREF        searching
+REFERRALS    yes
 
 <% if scope.lookupvar('openldap::client::use_ssl') == 'yes' %>
 # USE SSL
-SSL	start_tls
-TLS_REQCERT never
+SSL          start_tls
+TLS_REQCERT  never
 <% end %>
 
 <% if scope.lookupvar('openldap::client::unix_auth') == 'yes' %>
 # NSS
-nss_base_passwd        <%= scope.lookupvar('openldap::client::base_passwd') %>?<%= scope.lookupvar('openldap::client::scope') %>
-nss_base_shadow        <%= scope.lookupvar('openldap::client::base_passwd') %>?<%= scope.lookupvar('openldap::client::scope') %>
-nss_base_group         <%= scope.lookupvar('openldap::client::base_group')  %>?<%= scope.lookupvar('openldap::client::scope') %>
+nss_base_passwd  <%= scope.lookupvar('openldap::client::base_passwd') %>?<%= scope.lookupvar('openldap::client::scope') %>
+nss_base_shadow  <%= scope.lookupvar('openldap::client::base_passwd') %>?<%= scope.lookupvar('openldap::client::scope') %>
+nss_base_group   <%= scope.lookupvar('openldap::client::base_group')  %>?<%= scope.lookupvar('openldap::client::scope') %>
 
 #PAM options
-pam_password    md5
-pam_filter      objectclass=posixAccount
-pam_min_uid     9000
-pam_max_uid     0
+pam_password     md5
+pam_filter       objectclass=posixAccount
+pam_min_uid      9000
+pam_max_uid      0
 <% end %>
