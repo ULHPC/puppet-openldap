@@ -1,5 +1,5 @@
 name       'openldap'
-version    '0.0.6'
+version    '0.0.7'
 source     'git-admin.uni.lu:puppet-repo.git'
 author     'Hyacinthe Cartiaux (hyacinthe.cartiaux@uni.lu)'
 license    'GPL v3'
@@ -8,10 +8,10 @@ description 'Configure and manage openldap'
 project_page 'UNKNOWN'
 
 ## List of the classes defined in this module
-classes    'openldap::server, openldap::server::common, openldap::server::debian, openldap::server::redhat, openldap::client, openldap::client::common, openldap::client::debian, openldap::client::redhat, openldap::params'
+classes    'openldap::client, openldap::client::common, openldap::client::debian, openldap::client::redhat, openldap::params, openldap::server, openldap::server::common, openldap::server::debian, openldap::server::redhat'
 
 ## Add dependencies, if any:
 # dependency 'username/name', '>= 1.2.0'
 dependency 'concat'
 dependency 'openssl'
-defines    '["openldap::server::sync", "openldap::server::ou", "openldap::server::slapadd", "openldap::server::admin", "openldap::server::root", "openldap::server::overlay", "openldap::server::database", "openldap::server::acl"]'
+defines    '["openldap::server::database", "openldap::server::slapadd", "openldap::server::admin", "openldap::server::root", "openldap::server::sync", "openldap::server::ou", "openldap::server::acl"]'
