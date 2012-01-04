@@ -109,6 +109,17 @@ class openldap::server::common {
         subscribe  => File["${openldap::params::configfile}"],
     }
 
+    # SSH PUB KEY SCHEMAS
+
+    file { "${openldap::params::configdir_schema}/openssh-lpk.schema":
+        ensure  => "$openldap::server::ensure",
+        owner   => "${openldap::params::configfile_owner}",
+        group   => "${openldap::params::configfile_group}",
+        mode    => "${openldap::params::configdir_schema_mode}",
+        source  => 'puppet:///modules/openldap/openssh-lpk_openldap.schema',
+        require => Package["${openldap::params::packagename_server}"],
+    }
+
 
     # SLAPD.CONF creation
 

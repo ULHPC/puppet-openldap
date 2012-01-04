@@ -157,6 +157,10 @@ class openldap::params {
         default => '/etc/ldap/slapd.conf',
     }
 
+    $configdir_schema = $::operatingsystem ? {
+        default => '/etc/ldap/schema',
+    }
+
     $configfile_client = $::operatingsystem ? {
         default => '/etc/ldap/ldap.conf',
     }
@@ -175,6 +179,10 @@ class openldap::params {
 
     $configfile_mode = $::operatingsystem ? {
         default => '0640',
+    }
+
+    $configdir_schema_mode = $::operatingsystem ? {
+        default => '0644',
     }
 
     $configfile_group = $::operatingsystem ? {
