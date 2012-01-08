@@ -13,7 +13,10 @@ syncrepl rid=<%= rid %>
     binddn="<%= binddn %>"
     credentials=<%= credentials %>
 <% if use_ssl == "yes" -%>    starttls=critical
-    tls_reqcert=never<% end -%>
+    tls_reqcert=never
+    tls_cert=<%= ssl_certfile %>
+    tls_cacert=<%= ssl_cacertfile %>
+    tls_key=<%= ssl_keyfile %><% end -%>
 
 updateref <%= provider %>
 

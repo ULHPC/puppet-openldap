@@ -14,6 +14,20 @@
 #
 # $use_ssl:: *Default*: 'no'. Generate self signed certificates and use it
 #
+# $ssl_certfile_source::
+#  Only meaningfull if use_ssl = true
+#  optional source URL of the certificate, if the default self-signed generated
+#  one doesn't suit.
+#  If this parameter IS NOT specified, then it is assumed one expect the
+#  generation of a self-signed certificate.
+#
+# $ssl_keyfile_source::
+#  Only meaningfull if use_ssl = true and ssl_certfile_source != ''
+#   optional source URL of the private key.
+#  
+# $ssl_cacertfile_source::
+#   optional source URL of the CA certificate.
+#
 # $db_name:: *Default*: 'uni.lu'. Name of the database, used in configuration file
 #
 # $suffix:: *Default*: 'dc=uni,dc=lu'. suffix of the rootDSE
@@ -58,18 +72,33 @@
 #
 class openldap::server(
     $ensure    = $openldap::params::ensure,
-    $use_ssl   = $openldap::params::ssl,
     $db_name   = $openldap::params::db_name,
     $suffix    = $openldap::params::suffix,
     $admin_dn  = $openldap::params::admin_dn,
     $admin_pwd = $openldap::params::admin_pwd,
-    $syncprov  = $openldap::params::syncprov
+    $syncprov  = $openldap::params::syncprov,
+    $use_ssl               = $openldap::params::ssl,
+    $ssl_certfile_source   = '',
+    $ssl_keyfile_source    = '',
+    $ssl_cacertfile_source = ''
     ) inherits openldap::params
 {
     info ("Configuring openldap::server (with ensure = ${ensure})")
 
     if ! ($ensure in [ 'present', 'absent' ]) {
         fail("openldap 'ensure' parameter must be set to either 'absent' or 'present'")
+    }
+
+    if ("${openldap::server::use_ssl}" == 'yes' 
+       and ! ("${ssl_certfile_source}" == '' and
+        "${ssl_keyfile_source}"        == '' and
+        "${ssl_cacertfile_source}"     == '' )
+       and ! ("${ssl_certfile_source}" != '' and
+        "${ssl_keyfile_source}"        != '' and
+        "${ssl_cacertfile_source}"     != '' )
+       )
+    {
+        fail("openldap ssl source parameters must be all empty to automatically generate a self signed certificate, or all filled to specify your own files")
     }
 
     case $::operatingsystem {
@@ -138,19 +167,28 @@ class openldap::server::common {
         order   => 10,
     }
 
-    if ("${openldap::server::use_ssl}" == 'yes')
+    # Set up SSL
+
+    file { "${openldap::params::cert_directory}":
+        ensure  => "directory",
+        owner   => "${openldap::params::databasedir_owner}",
+        group   => "${openldap::params::databasedir_group}",
+        mode    => "${openldap::params::databasedir_mode}",
+        require => Package["${openldap::params::packagename_server}"],
+    }
+
+    $ssl_certfile   = "${openldap::params::cert_directory}/${fqdn}_cert.pem"
+    $ssl_keyfile    = "${openldap::params::cert_directory}/${fqdn}_key.pem"
+
+    if ("${openldap::server::use_ssl}"               == 'yes' and
+        "${openldap::server::ssl_certfile_source}"   == ''    and
+        "${openldap::server::ssl_keyfile_source}"    == ''    and
+        "${openldap::server::ssl_cacertfile_source}" == ''     )
     {
         include 'openssl'
+        $ssl_cacertfile = "${openssl::params::default_ssl_cacert}"
 
         # generate certificates
-
-        file { "${openldap::params::cert_directory}":
-            ensure => "directory",
-            owner   => "${openldap::params::databasedir_owner}",
-            group   => "${openldap::params::databasedir_group}",
-            mode    => "${openldap::params::databasedir_mode}",
-            require => Package["${openldap::params::packagename_server}"],
-        }
 
         openssl::x509::generate { "${fqdn}":
             ensure     => "${openldap::server::ensure}",
@@ -162,13 +200,56 @@ class openldap::server::common {
             require    => File["${openldap::params::cert_directory}"]
         }
 
+    } 
+    elsif ("${openldap::server::use_ssl}"            == 'yes' and
+        "${openldap::server::ssl_certfile_source}"   != ''    and
+        "${openldap::server::ssl_keyfile_source}"    != ''    and
+        "${openldap::server::ssl_cacertfile_source}" != ''     )
+    {
+        $ssl_cacertfile = "${openldap::params::cert_directory}/${fqdn}_cacert.pem"
+
+        # The optional source URL of the certificate has been passed
+        file { "$ssl_certfile":
+            ensure  => 'file',
+            owner   => "${openldap::params::databasedir_owner}",
+            group   => "${openldap::params::databasedir_group}",
+            mode    => '0644',
+            source  => "${openldap::server::ssl_certfile_source}",
+            require => File["${openldap::params::cert_directory}"]
+        }
+        # The associated keyfile should have been passed too...
+        file { "$ssl_keyfile":
+            ensure  => 'file',
+            owner   => "${openldap::params::databasedir_owner}",
+            group   => "${openldap::params::databasedir_group}",
+            mode    => '0600',
+            source  => "${openldap::server::ssl_keyfile_source}",
+            require => File["${openldap::params::cert_directory}"]
+        }
+        file { "$ssl_cacertfile":
+            ensure  => 'file',
+            owner   => "${openldap::params::databasedir_owner}",
+            group   => "${openldap::params::databasedir_group}",
+            mode    => '0600',
+            source  => "${openldap::server::ssl_cacertfile_source}",
+            require => File["${openldap::params::cert_directory}"]
+        }
+
+    }
+
+    if ("${openldap::server::use_ssl}" == 'yes')
+    {
         concat::fragment { "slapd_ssl":
            target  => "${openldap::params::configfile_server}",
            ensure  => "${openldap::server::ensure}",
            content => template("openldap/slapd/20_slapd_ssl.erb"),
            order   => 20,
-       }
+        }
     }
+
+    # End of SSL configuration
+
+    # DB creation
 
     openldap::server::database { "${db_name}":
         suffix    => "${openldap::server::suffix}",

@@ -2,8 +2,8 @@
 # TLS
 
 # TLSCipherSuite HIGH # debian package is compiled with gnutls, 
-                      # it's not the same ciphers than openssl
-TLSCACertificateFile  <%= scope.lookupvar('openssl::params::default_ssl_cacert') %>
-TLSCertificateFile    <%= scope.lookupvar('openldap::params::cert_directory') %>/<%= fqdn %>_cert.pem
-TLSCertificateKeyFile <%= scope.lookupvar('openldap::params::cert_directory') %>/<%= fqdn %>_key.pem
+                      # it's not the same ciphers as openssl
+TLSCACertificateFile  <%= scope.lookupvar('openldap::server::common::ssl_cacertfile') %>
+TLSCertificateFile    <%= scope.lookupvar('openldap::server::common::ssl_certfile') %>
+TLSCertificateKeyFile <%= scope.lookupvar('openldap::server::common::ssl_keyfile') %>
 <% end -%>
