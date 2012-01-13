@@ -174,7 +174,7 @@ class openldap::params {
     }
 
     $ldifdir = $::operatingsystem ? {
-        default => '/var/lib/ldif',
+        default => '/var/lib/ldap/puppet',
     }
 
     $configfile_mode = $::operatingsystem ? {

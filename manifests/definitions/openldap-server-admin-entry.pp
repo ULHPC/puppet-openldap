@@ -56,9 +56,9 @@ define openldap::server::admin-entry(
 
     file { "${openldap::params::ldifdir}/admin_${dn}.ldif":
        ensure  => $ensure,
-       owner   => "${openldap::params::databasedir_owner}",
-       group   => "${openldap::params::databasedir_group}",
-       mode    => "${openldap::params::databasedir_mode}",
+       owner   => "${openldap::params::configfile_owner}",
+       group   => "${openldap::params::configfile_group}",
+       mode    => "${openldap::params::configfile_mode}",
        content => template("openldap/ldif/admin.ldif.erb")
     }
     if ($ensure == 'present')

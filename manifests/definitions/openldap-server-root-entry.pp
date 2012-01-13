@@ -53,9 +53,9 @@ define openldap::server::root-entry(
 
     file { "${openldap::params::ldifdir}/root_${dn}.ldif":
        ensure  => $ensure,
-       owner   => "${openldap::params::databasedir_owner}",
-       group   => "${openldap::params::databasedir_group}",
-       mode    => "${openldap::params::databasedir_mode}",
+       owner   => "${openldap::params::configfile_owner}",
+       group   => "${openldap::params::configfile_group}",
+       mode    => "${openldap::params::configfile_mode}",
        content => template("openldap/ldif/root.ldif.erb")
     }
 
