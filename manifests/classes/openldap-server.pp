@@ -36,6 +36,8 @@
 #
 # admin_pwd:: password of the administrator
 #
+# salt:: salt value for the hash algorithm
+#
 # syncprov:: *Default*: 'no', if set to 'yes', the openldap server will be master for replication
 #
 # == Actions:
@@ -59,6 +61,7 @@
 #         suffix    => 'dc=uni,dc=lu',
 #         admin_dn  => 'cn=admin,dc=uni,dc=lu',
 #         admin_pwd => '********************',
+#         salt      => 'r4nd0m',
 #         syncprov  => 'yes',
 #     }   
 #
@@ -77,6 +80,7 @@ class openldap::server(
     $admin_dn  = $openldap::params::admin_dn,
     $admin_pwd = $openldap::params::admin_pwd,
     $syncprov  = $openldap::params::syncprov,
+    $salt      = $openldap::params::salt,
     $use_ssl               = $openldap::params::ssl,
     $ssl_certfile_source   = '',
     $ssl_keyfile_source    = '',

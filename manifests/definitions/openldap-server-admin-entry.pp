@@ -52,7 +52,7 @@ define openldap::server::admin-entry(
     include openldap::params
 
     $dn = $name
-    $hashed_password = slappasswd("${openldap::params::salt}", $admin_pwd)
+    $hashed_password = slappasswd("${openldap::server::salt}", $admin_pwd)
 
     file { "${openldap::params::ldifdir}/admin_${dn}.ldif":
        ensure  => $ensure,

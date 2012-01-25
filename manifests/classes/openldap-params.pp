@@ -110,6 +110,9 @@ class openldap::params {
         default                 => '1', # to test ?
     }
 
+    # Default salt value for slappasswd #
+    $salt = "!CHANGEIT!"
+
     $cert_directory = "/etc/ssl/slapd"
 
     #### MODULE INTERNAL VARIABLES  #########
@@ -220,8 +223,6 @@ class openldap::params {
         default => 'openldap',
     }
 
-    # Temporary fixed salt value for slappasswd #
-    $salt = "Kae5v"
 
 }
 

@@ -71,7 +71,7 @@ define openldap::server::database(
 
     # Hashed password
 
-    $hashed_password = slappasswd("${openldap::params::salt}", $admin_pwd)
+    $hashed_password = slappasswd("${openldap::server::salt}", $admin_pwd)
 
     # Database directory
 
