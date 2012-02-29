@@ -84,7 +84,6 @@ define openldap::server::database(
     }
 
     $fragment_db = (4 + $db_number) * 10
-    notice("${fragment_db}")
     concat::fragment { "slapd_overlay_database_${db_number}":
         target  => "${openldap::params::configfile_server}",
         ensure  => "${openldap::server::ensure}",
