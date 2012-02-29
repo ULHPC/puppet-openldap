@@ -1,5 +1,5 @@
 name       'openldap'
-version    '0.1.1'
+version    '0.1.2'
 source     'git-admin.uni.lu:puppet-repo.git'
 author     'Hyacinthe Cartiaux (hyacinthe.cartiaux@uni.lu)'
 license    'GPL v3'
@@ -14,4 +14,4 @@ classes    'openldap::client, openldap::client::common, openldap::client::debian
 # dependency 'username/name', '>= 1.2.0'
 dependency 'concat'
 dependency 'openssl'
-defines    '["openldap::server::database", "openldap::server::slapadd", "openldap::server::admin", "openldap::server::root", "openldap::server::sync", "openldap::server::ou", "openldap::server::acl"]'
+defines    '["openldap::server::database", "openldap::server::slapadd", "openldap::server::alias", "openldap::server::admin", "openldap::server::root", "openldap::server::sync", "openldap::server::ou", "openldap::server::acl"]'
