@@ -50,6 +50,11 @@ class openldap::params {
         default => "${openldap_suffix}"
     }
 
+    $admin_create = $openldap_admin_create ? {
+        ''      => 'yes',
+        default => "${openldap_admin_create}"
+    }
+
     $admin_dn = $openldap_admin_dn ? {
         ''      => 'cn=admin,dc=uni,dc=lu',
         default => "${openldap_admin_dn}"

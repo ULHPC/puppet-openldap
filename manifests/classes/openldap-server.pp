@@ -32,6 +32,8 @@
 #
 # $suffix:: *Default*: 'dc=uni,dc=lu'. suffix of the rootDSE
 #
+# $admin_create:: *Default*: 'yes'. Create or not the admin entity
+#
 # admin_dn:: *Default*: 'cn=admin,dc=uni,dc=lu', dn of the admin entry of the database
 #
 # admin_pwd:: password of the administrator
@@ -77,6 +79,7 @@ class openldap::server(
     $ensure    = $openldap::params::ensure,
     $db_name   = $openldap::params::db_name,
     $suffix    = $openldap::params::suffix,
+    $admin_create = $openldap::params::admin_create,
     $admin_dn  = $openldap::params::admin_dn,
     $admin_pwd = $openldap::params::admin_pwd,
     $syncprov  = $openldap::params::syncprov,
@@ -286,13 +289,16 @@ class openldap::server::common {
 
     # ADMIN ENTRY
 
-    # extract cn value from dn
-    $cn = regsubst("${openldap::server::admin_dn}",'^cn=([^,]*).*$','\1')
-    # $cn = generate("echo ${openldap::server::admin_dn} | grep -o -e '^cn=[^,]*' | tail -c +4")
-    openldap::server::admin-entry { "${openldap::server::admin_dn}":
-        cn        => $cn,
-        desc      => 'Administrator of this ldap server',
-        admin_pwd => "${openldap::server::admin_pwd}"
+    if ("${openldap::server::admin_create}" == 'yes')
+    {
+        # extract cn value from dn
+        $cn = regsubst("${openldap::server::admin_dn}",'^cn=([^,]*).*$','\1')
+        # $cn = generate("echo ${openldap::server::admin_dn} | grep -o -e '^cn=[^,]*' | tail -c +4")
+        openldap::server::admin-entry { "${openldap::server::admin_dn}":
+            cn        => $cn,
+            desc      => 'Administrator of this ldap server',
+            admin_pwd => "${openldap::server::admin_pwd}"
+        }
     }
 
 }
