@@ -24,7 +24,7 @@
 # $ssl_keyfile_source::
 #  Only meaningfull if use_ssl = true and ssl_certfile_source != ''
 #   optional source URL of the private key.
-#  
+#
 # $ssl_cacertfile_source::
 #   optional source URL of the CA certificate.
 #
@@ -65,7 +65,7 @@
 #         admin_pwd => '********************',
 #         salt      => 'r4nd0m',
 #         syncprov  => 'yes',
-#     }   
+#     }
 #
 # == Warnings
 #
@@ -96,7 +96,7 @@ class openldap::server(
         fail("openldap 'ensure' parameter must be set to either 'absent' or 'present'")
     }
 
-    if ("${openldap::server::use_ssl}" == 'yes' 
+    if ("${openldap::server::use_ssl}" == 'yes'
        and ! ("${ssl_certfile_source}" == '' and
         "${ssl_keyfile_source}"        == '' and
         "${ssl_cacertfile_source}"     == '' )
@@ -207,7 +207,7 @@ class openldap::server::common {
             require    => File["${openldap::params::cert_directory}"]
         }
 
-    } 
+    }
     elsif ("${openldap::server::use_ssl}"            == 'yes' and
         "${openldap::server::ssl_certfile_source}"   != ''    and
         "${openldap::server::ssl_keyfile_source}"    != ''    and
@@ -311,14 +311,26 @@ class openldap::server::common {
 class openldap::server::debian inherits openldap::server::common {
 
     # Use the good old slapd.conf file !
-    augeas { "/etc/default/slapd":
+    augeas { "SLAPD_CONF":
         context => "/files//etc/default/slapd",
         changes => "set SLAPD_CONF '${openldap::params::configfile_server}'",
         onlyif  => "get SLAPD_CONF != '${openldap::params::configfile_server}'",
-        notify => Service['openldap'],
-        require    => Package["${openldap::params::packagename_server}"],
+        notify  => Service['openldap'],
+        require => Package["${openldap::params::packagename_server}"],
     }
- 
+
+    # Enable ldaps://
+    if ("${openldap::server::use_ssl}" == 'yes')
+    {
+        augeas { "LDAPS":
+            context => "/files//etc/default/slapd",
+            changes => "set SLAPD_SERVICES \"'ldap:/// ldapi:/// ldaps:///'\"",
+            onlyif  => "get SLAPD_SERVICES != 'ldap:/// ldapi:/// ldaps:///'",
+            notify  => Service['openldap'],
+            require => Package["${openldap::params::packagename_server}"],
+        }
+    }
+
     # Delete the default database files
     exec { "bash -c \"rm ${openldap::params::databasedir}/{DB_CONFIG,__db.*,log.*,alock,dn2id.bdb,id2entry.bdb,objectClass.bdb} || true \"":
         path    => "/usr/bin:/usr/sbin:/bin",
