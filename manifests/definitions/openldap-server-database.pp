@@ -15,8 +15,8 @@
 #
 # [*db_number*]
 #   The number of your database, used internally to order the configuration file.
-#   Note that the first database #0 is reserved by slapd for configuration, 
-#   openldap::server define database #1, and additionnal defined database must 
+#   Note that the first database #0 is reserved by slapd for configuration,
+#   openldap::server define database #1, and additionnal defined database must
 #   be #2 or superior
 #
 # [*admin_dn*]
@@ -53,13 +53,13 @@ define openldap::server::database(
 
     include openldap::params
 
-    if (! "${suffix}") { 
+    if (! "${suffix}") {
          fail("openldap::server::database 'suffix' parameter must not be empty")
     }
     if (! "${db_number}") {
          fail("openldap::server::database 'db_number' parameter must not be set")
     }
-    if (! "${admin_dn}") { 
+    if (! "${admin_dn}") {
          fail("openldap::server::database 'binddn' parameter must not be empty")
     }
     if (! "${admin_pwd}") {
@@ -72,6 +72,20 @@ define openldap::server::database(
     # Hashed password
 
     $hashed_password = slappasswd("${openldap::server::salt}", $admin_pwd)
+
+    file { "/root/.openldap_pwd_${name}":
+        ensure  => "${openldap::server::ensure}",
+        owner   => "${openldap::params::configfile_owner}",
+        mode    => "${openldap::params::configfile_mode}",
+        content => "${admin_pwd}"
+    }
+    file { "/root/.openldap_admindn_${name}":
+        ensure  => "${openldap::server::ensure}",
+        owner   => "${openldap::params::configfile_owner}",
+        mode    => "${openldap::params::configfile_mode}",
+        content => "${admin_dn}"
+    }
+
 
     # Database directory
 
