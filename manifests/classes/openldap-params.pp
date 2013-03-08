@@ -106,7 +106,7 @@ class openldap::params {
     }
 
     $scope = $openldap_scope ? {
-        ''      => "one",
+        ''      => 'one',
         default => $openldap_scope,
     }
 
@@ -116,9 +116,9 @@ class openldap::params {
     }
 
     # Default salt value for slappasswd #
-    $salt = "!CHANGEIT!"
+    $salt = '!CHANGEIT!'
 
-    $cert_directory = "/etc/ssl/slapd"
+    $cert_directory = '/etc/ssl/slapd'
 
     #### MODULE INTERNAL VARIABLES  #########
     # (Modify to adapt to unsupported OSes)
@@ -130,13 +130,17 @@ class openldap::params {
 
     $packagename_client = $::operatingsystem ? {
         /(?i-mx:ubuntu|debian)/ => 'ldap-utils',
-        default                 => 'ldap-utils',
+        default                 => 'openldap-clients',
     }
 
     $packagename_unix_auth = $::operatingsystem ? {
         /(?i-mx:ubuntu|debian)/ => ['libnss-ldap',
                                     'libpam-ldap'],
-        default                 => [],
+        /(?i-mx:centos|redhat)/ => $::lsbmajdistrelease ? {
+                                    '5' => 'nss_ldap',
+                                    '6' => 'nss-pam-ldapd'
+        },
+        default                 => 'nss-ldap-ldapd',
     }
 
     $servicename = $::operatingsystem ? {
@@ -170,7 +174,13 @@ class openldap::params {
     }
 
     $configfile_client = $::operatingsystem ? {
-        default => '/etc/ldap/ldap.conf',
+        /(?i-mx:ubuntu|debian)/        => '/etc/ldap/ldap.conf',
+        /(?i-mx:centos|fedora|redhat)/ => '/etc/openldap/ldap.conf',
+        default => '/etc/openldap/ldap.conf',
+    }
+
+    $configfile_client_alternate = $::operatingsystem ? {
+        default => '/etc/ldap.conf',
     }
 
     $configfile_pam = $::operatingsystem ? {
@@ -214,7 +224,7 @@ class openldap::params {
     }
 
     $databasedir = $::operatingsystem ? {
-        default => "/var/lib/ldap",
+        default => '/var/lib/ldap',
     }
     $databasedir_mode = $::operatingsystem ? {
         default => '0755',

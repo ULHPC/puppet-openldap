@@ -60,7 +60,7 @@
 #
 # [Remember: No empty lines between comments and class definition]
 #
-class openldap::client ( 
+class openldap::client (
         $ensure      = $openldap::params::ensure,
         $base        = $openldap::params::suffix,
         $uri         = $openldap::params::uri,
@@ -92,9 +92,9 @@ class openldap::client (
 
     case $::operatingsystem {
         debian, ubuntu:         { include openldap::client::debian }
-        # redhat, fedora, centos: { include openldap::client::redhat }
+        redhat, centos: { include openldap::client::redhat }
         default: {
-            fail("Module $module_name is not supported on $operatingsystem")
+            fail("Module ${module_name} is not supported on ${operatingsystem}")
         }
     }
 }
@@ -111,16 +111,16 @@ class openldap::client::common {
     require openldap::params
 
     package { "${openldap::params::packagename_client}":
-        name    => "${openldap::params::packagename_client}",
         ensure  => "${openldap::client::ensure}",
+        name    => "${openldap::params::packagename_client}",
     }
 
     file { 'ldap.conf':
+        ensure  => "${openldap::client::ensure}",
         path    => "${openldap::params::configfile_client}",
         owner   => "${openldap::params::configfile_client_owner}",
         group   => "${openldap::params::configfile_client_group}",
         mode    => "${openldap::params::configfile_client_mode}",
-        ensure  => "${openldap::client::ensure}",
         content => template("openldap/ldap.conf.erb"),
         require => Package["${openldap::params::packagename_client}"],
     }
@@ -133,7 +133,7 @@ class openldap::client::common {
         }
 
         ## LINK ldap.conf / nss / pam
-    
+
         # libnss-ldap.conf
         file {"${openldap::params::configfile_nss}":
             ensure => "link",
@@ -151,7 +151,7 @@ class openldap::client::common {
 
         ## NSSWITCH
 
-        # ugly sed commands to edit nsswitch.conf because of missing nsswitch 
+        # ugly sed commands to edit nsswitch.conf because of missing nsswitch
         # lense in augeas in Debian Squeeze :( (available in augeas 0.7.4)
 
         # Passwd
@@ -165,7 +165,7 @@ class openldap::client::common {
             path    => "/usr/bin:/usr/sbin:/bin",
             unless  => "grep -e '^group:.*ldap.*$' /etc/nsswitch.conf",
         }
- 
+
         # shadow
         exec { "sed -s -i 's/shadow:[ ]*\(.*\)$/shadow: \1 ldap # edited by puppet/' /etc/nsswitch.conf":
             path    => "/usr/bin:/usr/sbin:/bin",
@@ -182,17 +182,17 @@ class openldap::client::common {
 # Specialization class for Debian systems
 class openldap::client::debian inherits openldap::client::common {
 
-     ## PAM
-     # /!\ Debian squeeze : pam configuration files are edited during package installation
+    ## PAM
+    # /!\ Debian squeeze : pam configuration files are edited during package installation
 
-     # use_authtok option prevent password changing with passwd
-     augeas { "delete use_authtok option":
-         context => '/files/etc/pam.d/common-password/*[type = "password"][module = "pam_ldap.so"]',
-         changes => [
-             "rm argument[1]",
-         ],
-         onlyif  => 'get argument[1] == "use_authtok"'
-     }
+    # use_authtok option prevent password changing with passwd
+    augeas { "delete use_authtok option":
+        context => '/files/etc/pam.d/common-password/*[type = "password"][module = "pam_ldap.so"]',
+        changes => [
+            "rm argument[1]",
+        ],
+        onlyif  => 'get argument[1] == "use_authtok"'
+    }
 }
 
 # ------------------------------------------------------------------------------
@@ -201,8 +201,14 @@ class openldap::client::debian inherits openldap::client::common {
 # Specialization class for Redhat systems
 class openldap::client::redhat inherits openldap::client::common {
 
-    # /!\ To be tested !
+    file {"${openldap::params::configfile_client_alternate}":
+        ensure => "link",
+        owner  => "${openldap::params::configfile_client_owner}",
+        group  => "${openldap::params::configfile_client_group}",
+        target => "${openldap::params::configfile_client}",
+    }
 
+    # /!\ To be tested !
     # configure PAM for LDAP
     # augeas { "authconfig":
     #   require => Augeas["ldapauth"],
