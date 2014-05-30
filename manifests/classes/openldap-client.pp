@@ -61,14 +61,15 @@
 # [Remember: No empty lines between comments and class definition]
 #
 class openldap::client (
-        $ensure      = $openldap::params::ensure,
-        $base        = $openldap::params::suffix,
-        $uri         = $openldap::params::uri,
-        $use_ssl     = $openldap::params::ssl,
-        $unix_auth   = $openldap::params::unix_auth,
-        $base_passwd = $openldap::params::base_passwd,
-        $base_group  = $openldap::params::base_group,
-        $scope       = $openldap::params::scope
+        $ensure                = $openldap::params::ensure,
+        $base                  = $openldap::params::suffix,
+        $uri                   = $openldap::params::uri,
+        $use_ssl               = $openldap::params::ssl,
+        $ssl_cacertfile_source = '',
+        $unix_auth             = $openldap::params::unix_auth,
+        $base_passwd           = $openldap::params::base_passwd,
+        $base_group            = $openldap::params::base_group,
+        $scope                 = $openldap::params::scope
         ) inherits openldap::params
 {
     info ("Configuring openldap (with ensure = ${ensure})")
@@ -114,6 +115,32 @@ class openldap::client::common {
         ensure  => "${openldap::client::ensure}",
         name    => "${openldap::params::packagename_client}",
     }
+
+    ## SSL
+
+    if ($ssl_cacertfile_source != '') {
+        if (! defined(File["${openldap::params::cert_directory}"])) {
+            file { "${openldap::params::cert_directory}":
+                ensure  => "directory",
+                owner   => "${openldap::params::configfile_client_owner}",
+                group   => "${openldap::params::configfile_client_group}",
+                mode    => "${openldap::params::databasedir_mode}",
+            }
+        }
+
+        $ssl_cacertfile = "${openldap::params::cert_directory}/ldap_cacert.pem"
+
+        file { "$ssl_cacertfile":
+            ensure  => "${openldap::client::ensure}",
+            owner   => "${openldap::params::configfile_client_owner}",
+            group   => "${openldap::params::configfile_client_group}",
+            mode    => "${openldap::params::configfile_client_mode}",
+            source  => "${openldap::client::ssl_cacertfile_source}",
+            require => File["${openldap::params::cert_directory}"]
+        }
+
+    }
+
 
     file { 'ldap.conf':
         ensure  => "${openldap::client::ensure}",
