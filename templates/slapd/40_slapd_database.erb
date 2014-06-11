@@ -26,6 +26,7 @@ dbconfig set_lk_max_lockers 1500
 index   uid,uidNumber,gidNumber,memberUid,objectClass   eq
 index   cn,sn                                           pres,eq,sub
 index   uniqueMember                                    eq,pres
+index   member                                          eq
 # Attributes used for replication
 index   entryCSN,entryUUID                              eq
 
