@@ -42,6 +42,8 @@
 #
 # syncprov:: *Default*: 'no', if set to 'yes', the openldap server will be master for replication
 #
+# memberof:: *Default*: 'no', if set to 'yes', the overlay memberof will be enabled
+#
 # == Actions:
 #
 # Install and configure openldap
@@ -83,6 +85,7 @@ class openldap::server(
     $admin_dn  = $openldap::params::admin_dn,
     $admin_pwd = $openldap::params::admin_pwd,
     $syncprov  = $openldap::params::syncprov,
+    $memberof  = $openldap::params::memberof,
     $salt      = $openldap::params::salt,
     $use_ssl               = $openldap::params::ssl,
     $ssl_certfile_source   = '',
@@ -140,8 +143,9 @@ class openldap::server::common {
 #       hasrestart => "${openldap::params::hasrestart}",
 #       pattern    => "${openldap::params::processname}",
 #       hasstatus  => "${openldap::params::hasstatus}",
-        require    => [ Package["${openldap::params::packagename_server}"],
-                      Concat [ "${openldap::params::configfile_server}" ] ],
+        require    => [ Package[ "${openldap::params::packagename_server}" ],
+                        Concat [ "${openldap::params::configfile_server}"  ]
+                      ],
         subscribe  => File["${openldap::params::configfile}"],
     }
 
@@ -263,7 +267,8 @@ class openldap::server::common {
         db_number => "${openldap::params::default_db}",
         admin_dn  => "${openldap::server::admin_dn}",
         admin_pwd => "${openldap::server::admin_pwd}",
-        syncprov  => "${openldap::server::syncprov}"
+        syncprov  => "${openldap::server::syncprov}",
+        memberof  => "${openldap::server::memberof}"
     }
 
     # LDIF DIRECTORY / needed for definitions which use slapadd

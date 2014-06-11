@@ -25,14 +25,22 @@
 # [*admin_pwd*]
 #   The password of the user $admin_dn
 #
+# [*syncprov*]
+#   Enable the syncprov overlay for this database
+#
+# [*memberof*]
+#   Enable the memberof overlay for this database
+#
+#
 # = Usage:
 #
 #          openldap::server::database { "uni.lu"
 #                suffix    => "dc=uni,dc=lu",
 #                db_number => "1",
 #                admin_dn  => "cn=admin,dc=uni,dc=lu",
-#                admin_pwd => "Ko2ewKo2ew"
-#                syncprov  => "yes"
+#                admin_pwd => "Ko2ewKo2ew",
+#                syncprov  => "yes",
+#                memberof  => "yes"
 #          }
 #
 # == Warnings
@@ -47,7 +55,8 @@ define openldap::server::database(
     $db_number,
     $admin_dn,
     $admin_pwd,
-    $syncprov
+    $syncprov,
+    $memberof
 )
 {
 
@@ -68,6 +77,10 @@ define openldap::server::database(
     if ! ($syncprov in [ 'yes', 'no' ]) {
          fail("openldap::server::database 'syncprov' parameter must be set to either 'yes' or 'no'")
     }
+    if ! ($memberof in [ 'yes', 'no' ]) {
+         fail("openldap::server::database 'memberof' parameter must be set to either 'yes' or 'no'")
+    }
+
 
     # Hashed password
 
@@ -105,7 +118,18 @@ define openldap::server::database(
         order   => $fragment_db,
     }
 
-    $fragment_syncprov = $fragment_db + 9
+    $fragment_memberof = $fragment_db + 8
+    if ("${memberof}" == 'yes')
+    {
+        concat::fragment { "slapd_memberof_${db_number}":
+            target  => "${openldap::params::configfile_server}",
+            ensure  => "${openldap::server::ensure}",
+            content => template("openldap/slapd/50_slapd_syncprov.erb"),
+            order   => $fragment_memberof,
+        }
+    }
+
+    $fragment_syncprov = $fragment_memberof + 1
     if ("${syncprov}" == 'yes')
     {
         concat::fragment { "slapd_syncprov_${db_number}":

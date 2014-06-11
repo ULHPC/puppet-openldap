@@ -70,6 +70,11 @@ class openldap::params {
         default => "${openldap_syncprov}"
     }
 
+    $memberof = $openldap_memberof ? {
+        ''      => 'no',
+        default => "${openldap_memberof}"
+    }
+
     $uri = $openldap_uri ? {
         ''      => 'ldap://localhost/',
         default => "${openldap_uri}",
@@ -86,7 +91,7 @@ class openldap::params {
     }
 
     $modules = $openldap_modules ? {
-        ''      => ['back_ldap', 'back_bdb', 'syncprov'],
+        ''      => ['back_ldap', 'back_bdb', 'syncprov', 'memberof'],
         default => $openldap_modules,
     }
 
