@@ -118,18 +118,7 @@ define openldap::server::database(
         order   => $fragment_db,
     }
 
-    $fragment_memberof = $fragment_db + 8
-    if ("${memberof}" == 'yes')
-    {
-        concat::fragment { "slapd_memberof_${db_number}":
-            target  => "${openldap::params::configfile_server}",
-            ensure  => "${openldap::server::ensure}",
-            content => template("openldap/slapd/50_slapd_syncprov.erb"),
-            order   => $fragment_memberof,
-        }
-    }
-
-    $fragment_syncprov = $fragment_memberof + 1
+    $fragment_syncprov = $fragment_db + 9
     if ("${syncprov}" == 'yes')
     {
         concat::fragment { "slapd_syncprov_${db_number}":
