@@ -182,19 +182,19 @@ class openldap::client::common {
         # lense in augeas in Debian Squeeze :( (available in augeas 0.7.4)
 
         # Passwd
-        exec { "sed -s -i 's/passwd:[ ]*\(.*\)$/passwd: \1 ldap # edited by puppet/' /etc/nsswitch.conf":
+        exec { "sed -s -i 's/passwd:[ ]*\\(.*\\)$/passwd: \\1 ldap # edited by puppet/' /etc/nsswitch.conf":
             path    => "/usr/bin:/usr/sbin:/bin",
             unless  => "grep -e '^passwd:.*ldap.*$' /etc/nsswitch.conf",
         }
 
         # Group
-        exec { "sed -s -i 's/group:[ ]*\(.*\)$/group: \1 ldap # edited by puppet/' /etc/nsswitch.conf":
+        exec { "sed -s -i 's/group:[ ]*\\(.*\\)$/group: \\1 ldap # edited by puppet/' /etc/nsswitch.conf":
             path    => "/usr/bin:/usr/sbin:/bin",
             unless  => "grep -e '^group:.*ldap.*$' /etc/nsswitch.conf",
         }
 
         # shadow
-        exec { "sed -s -i 's/shadow:[ ]*\(.*\)$/shadow: \1 ldap # edited by puppet/' /etc/nsswitch.conf":
+        exec { "sed -s -i 's/shadow:[ ]*\\(.*\\)$/shadow: \\1 ldap # edited by puppet/' /etc/nsswitch.conf":
             path    => "/usr/bin:/usr/sbin:/bin",
             unless  => "grep -e '^shadow:.*ldap.*$' /etc/nsswitch.conf",
         }
