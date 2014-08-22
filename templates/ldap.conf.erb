@@ -30,7 +30,11 @@ REFERRALS    yes
 <% if scope.lookupvar('openldap::client::use_ssl') == 'yes' %>
 # USE SSL
 SSL          start_tls
+<% if ((@operatingsystem =~ /centos|redhat/i) and (@lsbmajdistrelease == '5')) -%>
+TLS_REQCERT  never
+<% else -%>
 TLS_REQCERT  allow
+<% end -%>
 <%   if scope.lookupvar('openldap::client::ssl_cacertfile_source') != '' -%>
 TLS_CACERT   <%= ssl_cacertfile %>
 <%   end -%>
