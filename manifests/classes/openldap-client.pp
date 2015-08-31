@@ -244,7 +244,7 @@ class openldap::client::redhat inherits openldap::client::common {
     #     "set USELDAP yes",
     #     "set USELDAPAUTH yes",
     #     "set USEMKHOMEDIR yes",
-    #     "set USELOCAUTHORIZE yes”,
+    #     "set USELOCAUTHORIZE yes",
     #   ],
     # }
     # exec { "authconfig":
