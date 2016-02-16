@@ -42,7 +42,7 @@
 #
 define openldap::server::admin-entry(
     $ensure    = 'present',
-    $db_number = "${openldap::params::default_db}",
+    $db_number = $openldap::params::default_db,
     $cn,
     $desc,
     $admin_pwd
@@ -52,22 +52,22 @@ define openldap::server::admin-entry(
     include openldap::params
 
     $dn = $name
-    $hashed_password = slappasswd("${openldap::server::salt}", $admin_pwd)
+    $hashed_password = slappasswd($openldap::server::salt, $admin_pwd)
 
     file { "${openldap::params::ldifdir}/admin_${dn}.ldif":
        ensure  => $ensure,
-       owner   => "${openldap::params::configfile_owner}",
-       group   => "${openldap::params::configfile_group}",
-       mode    => "${openldap::params::configfile_mode}",
-       content => template("openldap/ldif/admin.ldif.erb")
+       owner   => $openldap::params::configfile_owner,
+       group   => $openldap::params::configfile_group,
+       mode    => $openldap::params::configfile_mode,
+       content => template('openldap/ldif/admin.ldif.erb')
     }
     if ($ensure == 'present')
     {
         openldap::server::slapadd { "slapadd ${openldap::params::ldifdir}/admin_${dn}.ldif":
-          db_number         => "${db_number}",
-          configfile_server => "${openldap::params::configfile_server}",
+          db_number         => $db_number,
+          configfile_server => $openldap::params::configfile_server,
           ldif_file         => "${openldap::params::ldifdir}/admin_${dn}.ldif",
-          require           => Openldap::Server::Root-entry["${openldap::server::suffix}"]
+          require           => Openldap::Server::Root-entry[$openldap::server::suffix]
         }
     }
 }

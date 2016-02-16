@@ -74,15 +74,15 @@ class openldap::client (
 {
     info ("Configuring openldap (with ensure = ${ensure})")
 
-    if ! ("${ensure}" in [ 'present', 'absent' ]) {
+    if ! ($ensure in [ 'present', 'absent' ]) {
         fail("openldap 'ensure' parameter must be set to either 'absent' or 'present'")
     }
 
-    if ! ("${unix_auth}" in [ 'yes', 'no' ]) {
+    if ! ($unix_auth in [ 'yes', 'no' ]) {
         fail("openldap 'unix_auth' parameter must be set to either 'yes' or 'no'")
     }
 
-    if ! ("${scope}" in [ 'one', 'sub' ]) {
+    if ! ($scope in [ 'one', 'sub' ]) {
         fail("openldap 'unix_auth' parameter must be set to either 'one' or 'sub'")
     }
 
@@ -111,69 +111,69 @@ class openldap::client::common {
     # Load the variables used in this module. Check the openldap-params.pp file
     require openldap::params
 
-    package { "${openldap::params::packagename_client}":
-        ensure  => "${openldap::client::ensure}",
-        name    => "${openldap::params::packagename_client}",
+    package { $openldap::params::packagename_client:
+        ensure => $openldap::client::ensure,
+        name   => $openldap::params::packagename_client,
     }
 
     ## SSL
 
     if ($ssl_cacertfile_source != '') {
-        if (! defined(File["${openldap::params::cert_directory}"])) {
-            file { "${openldap::params::cert_directory}":
-                ensure  => "directory",
-                owner   => "${openldap::params::configfile_client_owner}",
-                group   => "${openldap::params::configfile_client_group}",
-                mode    => "${openldap::params::databasedir_mode}",
+        if (! defined(File[$openldap::params::cert_directory])) {
+            file { $openldap::params::cert_directory:
+                ensure => 'directory',
+                owner  => $openldap::params::configfile_client_owner,
+                group  => $openldap::params::configfile_client_group,
+                mode   => $openldap::params::databasedir_mode,
             }
         }
 
         $ssl_cacertfile = "${openldap::params::cert_directory}/ldap_cacert.pem"
 
-        file { "$ssl_cacertfile":
-            ensure  => "${openldap::client::ensure}",
-            owner   => "${openldap::params::configfile_client_owner}",
-            group   => "${openldap::params::configfile_client_group}",
-            mode    => "${openldap::params::configfile_client_mode}",
-            source  => "${openldap::client::ssl_cacertfile_source}",
-            require => File["${openldap::params::cert_directory}"]
+        file { $ssl_cacertfile:
+            ensure  => $openldap::client::ensure,
+            owner   => $openldap::params::configfile_client_owner,
+            group   => $openldap::params::configfile_client_group,
+            mode    => $openldap::params::configfile_client_mode,
+            source  => $openldap::client::ssl_cacertfile_source,
+            require => File[$openldap::params::cert_directory]
         }
 
     }
 
 
     file { 'ldap.conf':
-        ensure  => "${openldap::client::ensure}",
-        path    => "${openldap::params::configfile_client}",
-        owner   => "${openldap::params::configfile_client_owner}",
-        group   => "${openldap::params::configfile_client_group}",
-        mode    => "${openldap::params::configfile_client_mode}",
-        content => template("openldap/ldap.conf.erb"),
-        require => Package["${openldap::params::packagename_client}"],
+        ensure  => $openldap::client::ensure,
+        path    => $openldap::params::configfile_client,
+        owner   => $openldap::params::configfile_client_owner,
+        group   => $openldap::params::configfile_client_group,
+        mode    => $openldap::params::configfile_client_mode,
+        content => template('openldap/ldap.conf.erb'),
+        require => Package[$openldap::params::packagename_client],
     }
 
     if ($unix_auth == 'yes')
     {
 
         package { $openldap::params::packagename_unix_auth:
-            ensure  => "${openldap::client::ensure}",
+            ensure  => $openldap::client::ensure,
         }
 
         ## LINK ldap.conf / nss / pam
 
         # libnss-ldap.conf
-        file {"${openldap::params::configfile_nss}":
-            ensure => "link",
-            owner  => "${openldap::params::configfile_client_owner}",
-            group  => "${openldap::params::configfile_client_group}",
-            target => "${openldap::params::configfile_client}",
+        file {$openldap::params::configfile_nss:
+            ensure => 'link',
+            owner  => $openldap::params::configfile_client_owner,
+            group  => $openldap::params::configfile_client_group,
+            target => $openldap::params::configfile_client,
         }
 
-        file {"${openldap::params::configfile_pam}":
-            ensure => "link",
-            owner  => "${openldap::params::configfile_client_owner}",
-            group  => "${openldap::params::configfile_client_group}",
-            target => "${openldap::params::configfile_client}",
+        file {$openldap::params::configfile_pam:
+            ensure => 'link',
+            owner  => $openldap::params::configfile_client_owner,
+            group  => $openldap::params::configfile_client_group,
+            target => $openldap::params::configfile_client,
         }
 
         ## NSSWITCH
@@ -183,20 +183,20 @@ class openldap::client::common {
 
         # Passwd
         exec { "sed -s -i 's/passwd:[ ]*\\(.*\\)$/passwd: \\1 ldap # edited by puppet/' /etc/nsswitch.conf":
-            path    => "/usr/bin:/usr/sbin:/bin",
-            unless  => "grep -e '^passwd:.*ldap.*$' /etc/nsswitch.conf",
+            path   => '/usr/bin:/usr/sbin:/bin',
+            unless => "grep -e '^passwd:.*ldap.*$' /etc/nsswitch.conf",
         }
 
         # Group
         exec { "sed -s -i 's/group:[ ]*\\(.*\\)$/group: \\1 ldap # edited by puppet/' /etc/nsswitch.conf":
-            path    => "/usr/bin:/usr/sbin:/bin",
-            unless  => "grep -e '^group:.*ldap.*$' /etc/nsswitch.conf",
+            path   => '/usr/bin:/usr/sbin:/bin',
+            unless => "grep -e '^group:.*ldap.*$' /etc/nsswitch.conf",
         }
 
         # shadow
         exec { "sed -s -i 's/shadow:[ ]*\\(.*\\)$/shadow: \\1 ldap # edited by puppet/' /etc/nsswitch.conf":
-            path    => "/usr/bin:/usr/sbin:/bin",
-            unless  => "grep -e '^shadow:.*ldap.*$' /etc/nsswitch.conf",
+            path   => '/usr/bin:/usr/sbin:/bin',
+            unless => "grep -e '^shadow:.*ldap.*$' /etc/nsswitch.conf",
         }
 
     }
@@ -213,10 +213,10 @@ class openldap::client::debian inherits openldap::client::common {
     # /!\ Debian squeeze : pam configuration files are edited during package installation
 
     # use_authtok option prevent password changing with passwd
-    augeas { "delete use_authtok option":
+    augeas { 'delete use_authtok option':
         context => '/files/etc/pam.d/common-password/*[type = "password"][module = "pam_ldap.so"]',
         changes => [
-            "rm argument[1]",
+            'rm argument[1]',
         ],
         onlyif  => 'get argument[1] == "use_authtok"'
     }
@@ -228,11 +228,11 @@ class openldap::client::debian inherits openldap::client::common {
 # Specialization class for Redhat systems
 class openldap::client::redhat inherits openldap::client::common {
 
-    file {"${openldap::params::configfile_client_alternate}":
-        ensure => "link",
-        owner  => "${openldap::params::configfile_client_owner}",
-        group  => "${openldap::params::configfile_client_group}",
-        target => "${openldap::params::configfile_client}",
+    file {$openldap::params::configfile_client_alternate:
+        ensure => 'link',
+        owner  => $openldap::params::configfile_client_owner,
+        group  => $openldap::params::configfile_client_group,
+        target => $openldap::params::configfile_client,
     }
 
     # /!\ To be tested !

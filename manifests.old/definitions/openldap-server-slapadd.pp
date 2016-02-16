@@ -34,8 +34,8 @@
 # [Remember: No empty lines between comments and class definition]
 #
 define openldap::server::slapadd(
-    $db_number         = "${openldap::params::default_db}",
-    $configfile_server = "${openldap::params::configfile_server}",
+    $db_number         = $openldap::params::default_db,
+    $configfile_server = $openldap::params::configfile_server,
     $ldif_file
 )
 {
@@ -50,12 +50,12 @@ define openldap::server::slapadd(
                   touch ${ldif_file}.puppet ; 
                   service slapd start || true",
       unless  => "test -f ${ldif_file}.puppet",
-      user => "root",
-      group => "root",
+      user    => 'root',
+      group   => 'root',
 #     user    => "${openldap::params::databasedir_owner}",
 #     group   => "${openldap::params::databasedir_group}",
-      require => [ File["${ldif_file}"], 
-                   Concat ["${openldap::params::configfile_server}"],
+      require => [ File[$ldif_file],
+                   Concat [$openldap::params::configfile_server],
                    Service ['openldap']  ],
     }
 }

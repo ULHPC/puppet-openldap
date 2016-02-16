@@ -53,8 +53,8 @@
 #
 define openldap::server::sync-consumer(
     $provider,
-    $db_number   = "${openldap::params::default_db}",
-    $use_ssl     = "${openldap::params::ssl}",
+    $db_number   = $openldap::params::default_db,
+    $use_ssl     = $openldap::params::ssl,
     $rid         = '000',
     $searchbase,
     $binddn,
@@ -66,12 +66,12 @@ define openldap::server::sync-consumer(
 
     if ( $use_ssl == 'yes' and
 #            "${openldap::server::use_ssl}" == 'yes' and 
-          ! ("${openldap::server::ssl_certfile_source}"   != '' and 
-             "${openldap::server::ssl_keyfile_source}"    != '' and 
-             "${openldap::server::ssl_cacertfile_source}" != '' )
+          ! ($openldap::server::ssl_certfile_source   != '' and
+             $openldap::server::ssl_keyfile_source    != '' and
+             $openldap::server::ssl_cacertfile_source != '' )
        )
-    {   
-        fail("Server must be properly configured to use SSL")
+    {
+        fail('Server must be properly configured to use SSL')
     }
 
     $ssl_certfile   = "${openldap::params::cert_directory}/${fqdn}_cert.pem"
@@ -81,9 +81,9 @@ define openldap::server::sync-consumer(
     $fragment_db    = (4 + $db_number) * 10 + 9
 
     concat::fragment { "slapd_sync_consumer_${db_number}_${rid}":
-        target  => "${openldap::params::configfile_server}",
-        ensure  => "${openldap::server::ensure}",
-        content => template("openldap/slapd/50_slapd_syncrep.erb"),
+        target  => $openldap::params::configfile_server,
+        ensure  => $openldap::server::ensure,
+        content => template('openldap/slapd/50_slapd_syncrep.erb'),
         order   => $fragment_db,
     }
 

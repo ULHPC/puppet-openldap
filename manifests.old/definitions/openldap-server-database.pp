@@ -62,16 +62,16 @@ define openldap::server::database(
 
     include openldap::params
 
-    if (! "${suffix}") {
+    if (! $suffix) {
          fail("openldap::server::database 'suffix' parameter must not be empty")
     }
-    if (! "${db_number}") {
+    if (! $db_number) {
          fail("openldap::server::database 'db_number' parameter must not be set")
     }
-    if (! "${admin_dn}") {
+    if (! $admin_dn) {
          fail("openldap::server::database 'binddn' parameter must not be empty")
     }
-    if (! "${admin_pwd}") {
+    if (! $admin_pwd) {
          fail("openldap::server::database 'credentials' parameter must not be empty")
     }
     if ! ($syncprov in [ 'yes', 'no' ]) {
@@ -84,47 +84,47 @@ define openldap::server::database(
 
     # Hashed password
 
-    $hashed_password = slappasswd("${openldap::server::salt}", $admin_pwd)
+    $hashed_password = slappasswd($openldap::server::salt, $admin_pwd)
 
     file { "/root/.openldap_pwd_${name}":
-        ensure  => "${openldap::server::ensure}",
-        owner   => "${openldap::params::configfile_owner}",
-        mode    => "${openldap::params::configfile_mode}",
-        content => "${admin_pwd}"
+        ensure  => $openldap::server::ensure,
+        owner   => $openldap::params::configfile_owner,
+        mode    => $openldap::params::configfile_mode,
+        content => $admin_pwd
     }
     file { "/root/.openldap_admindn_${name}":
-        ensure  => "${openldap::server::ensure}",
-        owner   => "${openldap::params::configfile_owner}",
-        mode    => "${openldap::params::configfile_mode}",
-        content => "${admin_dn}"
+        ensure  => $openldap::server::ensure,
+        owner   => $openldap::params::configfile_owner,
+        mode    => $openldap::params::configfile_mode,
+        content => $admin_dn
     }
 
 
     # Database directory
 
     file { "${openldap::params::databasedir}/${name}":
-        ensure  => "directory",
-        owner   => "${openldap::params::databasedir_owner}",
-        group   => "${openldap::params::databasedir_group}",
-        mode    => "${openldap::params::databasedir_mode}",
-        require => Package["${packagename}"],
+        ensure  => 'directory',
+        owner   => $openldap::params::databasedir_owner,
+        group   => $openldap::params::databasedir_group,
+        mode    => $openldap::params::databasedir_mode,
+        require => Package[$packagename],
     }
 
     $fragment_db = (4 + $db_number) * 10
     concat::fragment { "slapd_overlay_database_${db_number}":
-        target  => "${openldap::params::configfile_server}",
-        ensure  => "${openldap::server::ensure}",
-        content => template("openldap/slapd/40_slapd_database.erb"),
+        target  => $openldap::params::configfile_server,
+        ensure  => $openldap::server::ensure,
+        content => template('openldap/slapd/40_slapd_database.erb'),
         order   => $fragment_db,
     }
 
     $fragment_syncprov = $fragment_db + 9
-    if ("${syncprov}" == 'yes')
+    if ($syncprov == 'yes')
     {
         concat::fragment { "slapd_syncprov_${db_number}":
-            target  => "${openldap::params::configfile_server}",
-            ensure  => "${openldap::server::ensure}",
-            content => template("openldap/slapd/50_slapd_syncprov.erb"),
+            target  => $openldap::params::configfile_server,
+            ensure  => $openldap::server::ensure,
+            content => template('openldap/slapd/50_slapd_syncprov.erb'),
             order   => $fragment_syncprov,
         }
     }

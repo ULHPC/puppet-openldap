@@ -99,23 +99,23 @@ class openldap::server(
         fail("openldap 'ensure' parameter must be set to either 'absent' or 'present'")
     }
 
-    if ("${openldap::server::use_ssl}" == 'yes'
-       and ! ("${ssl_certfile_source}" == '' and
-        "${ssl_keyfile_source}"        == '' and
-        "${ssl_cacertfile_source}"     == '' )
-       and ! ("${ssl_certfile_source}" != '' and
-        "${ssl_keyfile_source}"        != '' and
-        "${ssl_cacertfile_source}"     != '' )
+    if ($openldap::server::use_ssl == 'yes'
+       and ! ($ssl_certfile_source == '' and
+        $ssl_keyfile_source        == '' and
+        $ssl_cacertfile_source     == '' )
+       and ! ($ssl_certfile_source != '' and
+        $ssl_keyfile_source        != '' and
+        $ssl_cacertfile_source     != '' )
        )
     {
-        fail("openldap ssl source parameters must be all empty to automatically generate a self signed certificate, or all filled to specify your own files")
+        fail('openldap ssl source parameters must be all empty to automatically generate a self signed certificate, or all filled to specify your own files')
     }
 
     case $::operatingsystem {
         debian, ubuntu:         { include openldap::server::debian }
 #       redhat, fedora, centos: { include openldap::server::redhat }
         default: {
-            fail("Module $module_name is not supported on $operatingsystem")
+            fail("Module ${module_name} is not supported on ${operatingsystem}")
         }
     }
 }
@@ -131,33 +131,33 @@ class openldap::server::common {
     # Load the variables used in this module. Check the openldap-params.pp file
     require openldap::params
 
-    package { "${openldap::params::packagename_server}":
-        name    => "${openldap::params::packagename_server}",
-        ensure  => "${openldap::server::ensure}",
+    package { $openldap::params::packagename_server:
+        name   => $openldap::params::packagename_server,
+        ensure => $openldap::server::ensure,
     }
 
     service { 'openldap':
-        name       => "${openldap::params::servicename}",
-        enable     => true,
-        ensure     => running,
+        name      => $openldap::params::servicename,
+        enable    => true,
+        ensure    => running,
 #       hasrestart => "${openldap::params::hasrestart}",
 #       pattern    => "${openldap::params::processname}",
 #       hasstatus  => "${openldap::params::hasstatus}",
-        require    => [ Package[ "${openldap::params::packagename_server}" ],
-                        Concat [ "${openldap::params::configfile_server}"  ]
+        require   => [ Package[ $openldap::params::packagename_server ],
+                        Concat [ $openldap::params::configfile_server  ]
                       ],
-        subscribe  => File["${openldap::params::configfile}"],
+        subscribe => File[$openldap::params::configfile],
     }
 
     # SSH PUB KEY SCHEMAS
 
     file { "${openldap::params::configdir_schema}/openssh-lpk.schema":
-        ensure  => "$openldap::server::ensure",
-        owner   => "${openldap::params::configfile_owner}",
-        group   => "${openldap::params::configfile_group}",
-        mode    => "${openldap::params::configdir_schema_mode}",
+        ensure  => $openldap::server::ensure,
+        owner   => $openldap::params::configfile_owner,
+        group   => $openldap::params::configfile_group,
+        mode    => $openldap::params::configdir_schema_mode,
         source  => 'puppet:///modules/openldap/openssh-lpk_openldap.schema',
-        require => Package["${openldap::params::packagename_server}"],
+        require => Package[$openldap::params::packagename_server],
     }
 
 
@@ -165,95 +165,95 @@ class openldap::server::common {
 
     include concat::setup
 
-    concat { "${openldap::params::configfile_server}":
-        owner   => "${openldap::params::configfile_owner}",
-        group   => "${openldap::params::configfile_group}",
-        mode    => "${openldap::params::configfile_mode}",
-        require => Package["${openldap::params::packagename_server}"],
+    concat { $openldap::params::configfile_server:
+        owner   => $openldap::params::configfile_owner,
+        group   => $openldap::params::configfile_group,
+        mode    => $openldap::params::configfile_mode,
+        require => Package[$openldap::params::packagename_server],
     }
-    concat::fragment { "slapd_header":
-        target  => "${openldap::params::configfile_server}",
-        ensure  => "${openldap::server::ensure}",
-        content => template("openldap/slapd/10_slapd_header.erb"),
+    concat::fragment { 'slapd_header':
+        target  => $openldap::params::configfile_server,
+        ensure  => $openldap::server::ensure,
+        content => template('openldap/slapd/10_slapd_header.erb'),
         order   => 10,
     }
 
     # Set up SSL
 
-    file { "${openldap::params::cert_directory}":
-        ensure  => "directory",
-        owner   => "${openldap::params::databasedir_owner}",
-        group   => "${openldap::params::databasedir_group}",
-        mode    => "${openldap::params::databasedir_mode}",
-        require => Package["${openldap::params::packagename_server}"],
+    file { $openldap::params::cert_directory:
+        ensure  => 'directory',
+        owner   => $openldap::params::databasedir_owner,
+        group   => $openldap::params::databasedir_group,
+        mode    => $openldap::params::databasedir_mode,
+        require => Package[$openldap::params::packagename_server],
     }
 
     $ssl_certfile   = "${openldap::params::cert_directory}/${fqdn}_cert.pem"
     $ssl_keyfile    = "${openldap::params::cert_directory}/${fqdn}_key.pem"
 
-    if ("${openldap::server::use_ssl}"               == 'yes' and
-        "${openldap::server::ssl_certfile_source}"   == ''    and
-        "${openldap::server::ssl_keyfile_source}"    == ''    and
-        "${openldap::server::ssl_cacertfile_source}" == ''     )
+    if ($openldap::server::use_ssl               == 'yes' and
+        $openldap::server::ssl_certfile_source   == ''    and
+        $openldap::server::ssl_keyfile_source    == ''    and
+        $openldap::server::ssl_cacertfile_source == ''     )
     {
         include 'openssl'
-        $ssl_cacertfile = "${openssl::params::default_ssl_cacert}"
+        $ssl_cacertfile = $openssl::params::default_ssl_cacert
 
         # generate certificates
 
-        openssl::x509::generate { "${fqdn}":
-            ensure     => "${openldap::server::ensure}",
+        openssl::x509::generate { $fqdn:
+            ensure     => $openldap::server::ensure,
             commonname => $fqdn,
-            owner      => "${openldap::params::databasedir_owner}",
-            group      => "${openldap::params::databasedir_group}",
+            owner      => $openldap::params::databasedir_owner,
+            group      => $openldap::params::databasedir_group,
             email      => 'csc-sysadmins@uni.lu',
-            basedir    => "${openldap::params::cert_directory}",
-            require    => File["${openldap::params::cert_directory}"]
+            basedir    => $openldap::params::cert_directory,
+            require    => File[$openldap::params::cert_directory]
         }
 
     }
-    elsif ("${openldap::server::use_ssl}"            == 'yes' and
-        "${openldap::server::ssl_certfile_source}"   != ''    and
-        "${openldap::server::ssl_keyfile_source}"    != ''    and
-        "${openldap::server::ssl_cacertfile_source}" != ''     )
+    elsif ($openldap::server::use_ssl            == 'yes' and
+        $openldap::server::ssl_certfile_source   != ''    and
+        $openldap::server::ssl_keyfile_source    != ''    and
+        $openldap::server::ssl_cacertfile_source != ''     )
     {
         $ssl_cacertfile = "${openldap::params::cert_directory}/${fqdn}_cacert.pem"
 
         # The optional source URL of the certificate has been passed
-        file { "$ssl_certfile":
+        file { $ssl_certfile:
             ensure  => 'file',
-            owner   => "${openldap::params::databasedir_owner}",
-            group   => "${openldap::params::databasedir_group}",
+            owner   => $openldap::params::databasedir_owner,
+            group   => $openldap::params::databasedir_group,
             mode    => '0644',
-            source  => "${openldap::server::ssl_certfile_source}",
-            require => File["${openldap::params::cert_directory}"]
+            source  => $openldap::server::ssl_certfile_source,
+            require => File[$openldap::params::cert_directory]
         }
         # The associated keyfile should have been passed too...
-        file { "$ssl_keyfile":
+        file { $ssl_keyfile:
             ensure  => 'file',
-            owner   => "${openldap::params::databasedir_owner}",
-            group   => "${openldap::params::databasedir_group}",
+            owner   => $openldap::params::databasedir_owner,
+            group   => $openldap::params::databasedir_group,
             mode    => '0600',
-            source  => "${openldap::server::ssl_keyfile_source}",
-            require => File["${openldap::params::cert_directory}"]
+            source  => $openldap::server::ssl_keyfile_source,
+            require => File[$openldap::params::cert_directory]
         }
-        file { "$ssl_cacertfile":
+        file { $ssl_cacertfile:
             ensure  => 'file',
-            owner   => "${openldap::params::databasedir_owner}",
-            group   => "${openldap::params::databasedir_group}",
+            owner   => $openldap::params::databasedir_owner,
+            group   => $openldap::params::databasedir_group,
             mode    => '0600',
-            source  => "${openldap::server::ssl_cacertfile_source}",
-            require => File["${openldap::params::cert_directory}"]
+            source  => $openldap::server::ssl_cacertfile_source,
+            require => File[$openldap::params::cert_directory]
         }
 
     }
 
-    if ("${openldap::server::use_ssl}" == 'yes')
+    if ($openldap::server::use_ssl == 'yes')
     {
-        concat::fragment { "slapd_ssl":
-           target  => "${openldap::params::configfile_server}",
-           ensure  => "${openldap::server::ensure}",
-           content => template("openldap/slapd/20_slapd_ssl.erb"),
+        concat::fragment { 'slapd_ssl':
+           target  => $openldap::params::configfile_server,
+           ensure  => $openldap::server::ensure,
+           content => template('openldap/slapd/20_slapd_ssl.erb'),
            order   => 20,
         }
     }
@@ -262,47 +262,47 @@ class openldap::server::common {
 
     # DB creation
 
-    openldap::server::database { "${db_name}":
-        suffix    => "${openldap::server::suffix}",
-        db_number => "${openldap::params::default_db}",
-        admin_dn  => "${openldap::server::admin_dn}",
-        admin_pwd => "${openldap::server::admin_pwd}",
-        syncprov  => "${openldap::server::syncprov}",
-        memberof  => "${openldap::server::memberof}"
+    openldap::server::database { $db_name:
+        suffix    => $openldap::server::suffix,
+        db_number => $openldap::params::default_db,
+        admin_dn  => $openldap::server::admin_dn,
+        admin_pwd => $openldap::server::admin_pwd,
+        syncprov  => $openldap::server::syncprov,
+        memberof  => $openldap::server::memberof
     }
 
     # LDIF DIRECTORY / needed for definitions which use slapadd
 
-    file { "${openldap::params::ldifdir}":
-        ensure => "directory",
-        owner   => "${openldap::params::databasedir_owner}",
-        group   => "${openldap::params::databasedir_group}",
-        mode    => "${openldap::params::databasedir_mode}",
-        require => Package["${openldap::params::packagename_server}"],
+    file { $openldap::params::ldifdir:
+        ensure  => 'directory',
+        owner   => $openldap::params::databasedir_owner,
+        group   => $openldap::params::databasedir_group,
+        mode    => $openldap::params::databasedir_mode,
+        require => Package[$openldap::params::packagename_server],
     }
 
     # ROOTDSE
 
     # extract dc value from dn
-    $dc = regsubst("${openldap::server::suffix}",'^dc=([^,]*).*$','\1')
-    openldap::server::root-entry { "${openldap::server::suffix}":
-        dc        => $dc,
-        o         => $dc,
-        desc      => "Root of the ${db_name} ldap directory",
-        require   => File["${openldap::params::ldifdir}"],
+    $dc = regsubst($openldap::server::suffix,'^dc=([^,]*).*$','\1')
+    openldap::server::root-entry { $openldap::server::suffix:
+        dc      => $dc,
+        o       => $dc,
+        desc    => "Root of the ${db_name} ldap directory",
+        require => File[$openldap::params::ldifdir],
     }
 
     # ADMIN ENTRY
 
-    if ("${openldap::server::admin_create}" == 'yes')
+    if ($openldap::server::admin_create == 'yes')
     {
         # extract cn value from dn
-        $cn = regsubst("${openldap::server::admin_dn}",'^cn=([^,]*).*$','\1')
+        $cn = regsubst($openldap::server::admin_dn,'^cn=([^,]*).*$','\1')
         # $cn = generate("echo ${openldap::server::admin_dn} | grep -o -e '^cn=[^,]*' | tail -c +4")
-        openldap::server::admin-entry { "${openldap::server::admin_dn}":
+        openldap::server::admin-entry { $openldap::server::admin_dn:
             cn        => $cn,
             desc      => 'Administrator of this ldap server',
-            admin_pwd => "${openldap::server::admin_pwd}"
+            admin_pwd => $openldap::server::admin_pwd
         }
     }
 
@@ -316,33 +316,33 @@ class openldap::server::common {
 class openldap::server::debian inherits openldap::server::common {
 
     # Use the good old slapd.conf file !
-    augeas { "SLAPD_CONF":
-        context => "/files//etc/default/slapd",
+    augeas { 'SLAPD_CONF':
+        context => '/files//etc/default/slapd',
         changes => "set SLAPD_CONF '${openldap::params::configfile_server}'",
         onlyif  => "get SLAPD_CONF != '${openldap::params::configfile_server}'",
         notify  => Service['openldap'],
-        require => Package["${openldap::params::packagename_server}"],
+        require => Package[$openldap::params::packagename_server],
     }
 
     # Enable ldaps://
-    if ("${openldap::server::use_ssl}" == 'yes')
+    if ($openldap::server::use_ssl == 'yes')
     {
-        augeas { "LDAPS":
-            context => "/files//etc/default/slapd",
+        augeas { 'LDAPS':
+            context => '/files//etc/default/slapd',
             changes => "set SLAPD_SERVICES \"'ldap:/// ldapi:/// ldaps:///'\"",
             onlyif  => "get SLAPD_SERVICES != 'ldap:/// ldapi:/// ldaps:///'",
             notify  => Service['openldap'],
-            require => Package["${openldap::params::packagename_server}"],
+            require => Package[$openldap::params::packagename_server],
         }
     }
 
     # Delete the default database files
     exec { "bash -c \"rm ${openldap::params::databasedir}/{DB_CONFIG,__db.*,log.*,alock,dn2id.bdb,id2entry.bdb,objectClass.bdb} || true \"":
-        path    => "/usr/bin:/usr/sbin:/bin",
-        user    => "${openldap::params::databasedir_owner}",
-        group   => "${openldap::params::databasedir_group}",
+        path    => '/usr/bin:/usr/sbin:/bin',
+        user    => $openldap::params::databasedir_owner,
+        group   => $openldap::params::databasedir_group,
 #       unless  => "test ! -f ${openldap::params::databasedir}/DB_CONFIG",
-        require => Package["${openldap::params::packagename_server}"],
+        require => Package[$openldap::params::packagename_server],
     }
 
 }

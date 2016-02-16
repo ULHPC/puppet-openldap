@@ -35,7 +35,7 @@
 #
 define openldap::server::alias-entry(
     $ensure    = 'present',
-    $db_number = "${openldap::params::default_db}",
+    $db_number = $openldap::params::default_db,
     $target
 )
 {
@@ -44,23 +44,23 @@ define openldap::server::alias-entry(
 
     $dn = $name
     $attr = regsubst($dn,'^([^=]*)=.*$','\1')
-    $value = regsubst($dn,"^$attr=([^,]*).*$",'\1')
+    $value = regsubst($dn,"^${attr}=([^,]*).*$",'\1')
 
     file { "${openldap::params::ldifdir}/alias_${dn}.ldif":
        ensure  => $ensure,
-       owner   => "${openldap::params::configfile_owner}",
-       group   => "${openldap::params::configfile_group}",
-       mode    => "${openldap::params::configfile_mode}",
+       owner   => $openldap::params::configfile_owner,
+       group   => $openldap::params::configfile_group,
+       mode    => $openldap::params::configfile_mode,
        content => template('openldap/ldif/alias.ldif.erb')
     }
 
     if ($ensure == 'present')
     {
        openldap::server::slapadd { "slapadd ${openldap::params::ldifdir}/alias_${dn}.ldif":
-          db_number         => "${db_number}",
-          configfile_server => "${openldap::params::configfile_server}",
+          db_number         => $db_number,
+          configfile_server => $openldap::params::configfile_server,
           ldif_file         => "${openldap::params::ldifdir}/alias_${dn}.ldif",
-          require           => Openldap::Server::Root-entry["${openldap::server::suffix}"]
+          require           => Openldap::Server::Root-entry[$openldap::server::suffix]
        }
     }
 }

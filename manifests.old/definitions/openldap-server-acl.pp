@@ -54,15 +54,15 @@ define openldap::server::acl(
 
     include openldap::params
 
-    if ! ( "${anonymous}" in [ 'yes', 'no' ]) {
+    if ! ( $anonymous in [ 'yes', 'no' ]) {
           fail("openldap::server::acl 'anonymous' parameter must be set to either 'yes' or 'no'")
     }
 
     $fragment_number = (4 + $db_number) * 10 + 1 + $order
     concat::fragment { "slapd_acl_${name}":
-         target  => "${openldap::params::configfile_server}",
-         ensure  => "${openldap::server::ensure}",
-         content => template("openldap/slapd/45_slapd_acl.erb"),
+         target  => $openldap::params::configfile_server,
+         ensure  => $openldap::server::ensure,
+         content => template('openldap/slapd/45_slapd_acl.erb'),
          order   => $fragment_number,
     }
 

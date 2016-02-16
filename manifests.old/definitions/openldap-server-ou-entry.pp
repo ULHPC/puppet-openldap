@@ -39,7 +39,7 @@
 #
 define openldap::server::ou-entry(
     $ensure    = 'present',
-    $db_number = "${openldap::params::default_db}",
+    $db_number = $openldap::params::default_db,
     $ou,
     $desc
 )
@@ -51,19 +51,19 @@ define openldap::server::ou-entry(
 
     file { "${openldap::params::ldifdir}/ou_${dn}.ldif":
        ensure  => $ensure,
-       owner   => "${openldap::params::configfile_owner}",
-       group   => "${openldap::params::configfile_group}",
-       mode    => "${openldap::params::configfile_mode}",
+       owner   => $openldap::params::configfile_owner,
+       group   => $openldap::params::configfile_group,
+       mode    => $openldap::params::configfile_mode,
        content => template('openldap/ldif/ou.ldif.erb')
     }
 
     if ($ensure == 'present')
     {
        openldap::server::slapadd { "slapadd ${openldap::params::ldifdir}/ou_${dn}.ldif":
-          db_number         => "${db_number}",
-          configfile_server => "${openldap::params::configfile_server}",
+          db_number         => $db_number,
+          configfile_server => $openldap::params::configfile_server,
           ldif_file         => "${openldap::params::ldifdir}/ou_${dn}.ldif",
-          require           => Openldap::Server::Root-entry["${openldap::server::suffix}"]
+          require           => Openldap::Server::Root-entry[$openldap::server::suffix]
        }
     }
 }
