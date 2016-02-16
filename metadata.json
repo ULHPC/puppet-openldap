@@ -15,6 +15,14 @@
     {
       "name": "puppetlabs-stdlib",
       "version_requirement": ">=4.2.2 <5.0.0"
+    },
+    {
+      "name": "puppetlabs/concat",
+      "version_requirement": ">= 1.2.0 < 2.0.0"
+    },
+    {
+      "name": "ULHPC-openssl",
+      "version_requirement": ">=1.0.0 <2.0.0"
     }
   ],
   "operatingsystem_support": [
@@ -26,5 +34,29 @@
       ]
     }
   ],
-  "tags": ["openldap", "ldap"]
+  "tags": [
+    "openldap",
+    "ldap"
+  ],
+  "classes": [
+    "openldap",
+    "openldap::client",
+    "openldap::client::common",
+    "openldap::client::common::debian",
+    "openldap::client::common::redhat",
+    "openldap::params",
+    "openldap::server",
+    "openldap::server::common",
+    "openldap::server::common::debian"
+  ],
+  "definitions": [
+    "openldap::server::acl",
+    "openldap::server::admin-entry",
+    "openldap::server::alias-entry",
+    "openldap::server::database",
+    "openldap::server::ou-entry",
+    "openldap::server::root-entry",
+    "openldap::server::slapadd",
+    "openldap::server::sync-consumer"
+  ]
 }
