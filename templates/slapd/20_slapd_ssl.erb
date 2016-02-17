@@ -1,0 +1,9 @@
+<% if scope.lookupvar('openldap::server::ssl') == "yes" -%>
+# TLS
+
+# TLSCipherSuite HIGH # debian package is compiled with gnutls, 
+                      # it's not the same ciphers as openssl
+TLSCACertificateFile  <%= scope.lookupvar('openldap::server::common::ssl_cacertfile') %>
+TLSCertificateFile    <%= scope.lookupvar('openldap::server::common::ssl_certfile') %>
+TLSCertificateKeyFile <%= scope.lookupvar('openldap::server::common::ssl_keyfile') %>
+<% end -%>

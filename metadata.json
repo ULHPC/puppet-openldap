@@ -1,0 +1,62 @@
+{
+  "name": "ULHPC/openldap",
+  "version": "0.2.1",
+  "author": "S. Varrette, H. Cartiaux, V. Plugaru, S. Diehl aka. UL HPC Management Team",
+  "mail": "hpc-sysadmins@uni.lu",
+  "summary": "Configure and manage openldap",
+  "description": "Configure and manage openldap",
+  "license": "GPL-3.0",
+  "source": "https://github.com/ULHPC/puppet-openldap",
+  "docs_project": "ulhpc-puppet-openldap",
+  "project_page": "https://github.com/ULHPC/puppet-openldap",
+  "issues_url": "https://github.com/ULHPC/puppet-openldap/issues",
+  "forge_url": "https://forge.puppetlabs.com/ULHPC/openldap",
+  "dependencies": [
+    {
+      "name": "puppetlabs-stdlib",
+      "version_requirement": ">=4.2.2 <5.0.0"
+    },
+    {
+      "name": "puppetlabs/concat",
+      "version_requirement": ">= 1.2.0 < 2.0.0"
+    },
+    {
+      "name": "ULHPC-openssl",
+      "version_requirement": ">=1.1.2 <2.0.0"
+    }
+  ],
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "Debian",
+      "operatingsystemrelease": [
+        "6",
+        "7"
+      ]
+    }
+  ],
+  "tags": [
+    "openldap",
+    "ldap"
+  ],
+  "classes": [
+    "openldap",
+    "openldap::client",
+    "openldap::client::common",
+    "openldap::client::common::debian",
+    "openldap::client::common::redhat",
+    "openldap::params",
+    "openldap::server",
+    "openldap::server::common",
+    "openldap::server::common::debian"
+  ],
+  "definitions": [
+    "openldap::server::acl",
+    "openldap::server::admin::entry",
+    "openldap::server::alias::entry",
+    "openldap::server::database",
+    "openldap::server::ou::entry",
+    "openldap::server::root::entry",
+    "openldap::server::slapadd",
+    "openldap::server::sync::consumer"
+  ]
+}

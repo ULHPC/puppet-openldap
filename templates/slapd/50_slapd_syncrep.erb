@@ -1,0 +1,22 @@
+# Syncrepl configuration
+# attrs : both user (*) and operational (+) attributes required
+# Sync every ten minutes, always retry
+
+syncrepl rid=<%= @rid %>
+    provider=<%= @provider %>
+    type=refreshOnly
+    retry="5 5 300 +"
+    interval=00:00:01:00
+    searchbase="<%= @searchbase %>"
+    attrs="*,+"
+    bindmethod=simple
+    binddn="<%= @binddn %>"
+    credentials=<%= @credentials %>
+<% if @use_ssl == "yes" -%>    starttls=critical
+    tls_reqcert=never
+    tls_cert=<%= @ssl_certfile %>
+    tls_cacert=<%= @ssl_cacertfile %>
+    tls_key=<%= @ssl_keyfile %><% end -%>
+
+updateref <%= @provider %>
+
