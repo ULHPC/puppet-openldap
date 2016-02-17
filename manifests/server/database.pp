@@ -1,4 +1,4 @@
-# File::      <tt>openldap-server-database.pp</tt>
+# File::      <tt>server/database.pp</tt>
 # Author::    Hyacinthe Cartiaux (<hyacinthe.cartiaux@uni.lu>)
 # Copyright:: Copyright (c) 2011 Hyacinthe Cartiaux
 # License::   GPLv3
@@ -63,22 +63,22 @@ define openldap::server::database(
     include openldap::params
 
     if (! $suffix) {
-         fail("openldap::server::database 'suffix' parameter must not be empty")
+        fail("openldap::server::database 'suffix' parameter must not be empty")
     }
     if (! $db_number) {
-         fail("openldap::server::database 'db_number' parameter must not be set")
+        fail("openldap::server::database 'db_number' parameter must not be set")
     }
     if (! $admin_dn) {
-         fail("openldap::server::database 'binddn' parameter must not be empty")
+        fail("openldap::server::database 'binddn' parameter must not be empty")
     }
     if (! $admin_pwd) {
-         fail("openldap::server::database 'credentials' parameter must not be empty")
+        fail("openldap::server::database 'credentials' parameter must not be empty")
     }
     if ! ($syncprov in [ 'yes', 'no' ]) {
-         fail("openldap::server::database 'syncprov' parameter must be set to either 'yes' or 'no'")
+        fail("openldap::server::database 'syncprov' parameter must be set to either 'yes' or 'no'")
     }
     if ! ($memberof in [ 'yes', 'no' ]) {
-         fail("openldap::server::database 'memberof' parameter must be set to either 'yes' or 'no'")
+        fail("openldap::server::database 'memberof' parameter must be set to either 'yes' or 'no'")
     }
 
 
@@ -107,13 +107,13 @@ define openldap::server::database(
         owner   => $openldap::params::databasedir_owner,
         group   => $openldap::params::databasedir_group,
         mode    => $openldap::params::databasedir_mode,
-        require => Package[$packagename],
+        require => Package[$openldap::params::packagename_server],
     }
 
     $fragment_db = (4 + $db_number) * 10
     concat::fragment { "slapd_overlay_database_${db_number}":
-        target  => $openldap::params::configfile_server,
         ensure  => $openldap::server::ensure,
+        target  => $openldap::params::configfile_server,
         content => template('openldap/slapd/40_slapd_database.erb'),
         order   => $fragment_db,
     }
@@ -122,8 +122,8 @@ define openldap::server::database(
     if ($syncprov == 'yes')
     {
         concat::fragment { "slapd_syncprov_${db_number}":
-            target  => $openldap::params::configfile_server,
             ensure  => $openldap::server::ensure,
+            target  => $openldap::params::configfile_server,
             content => template('openldap/slapd/50_slapd_syncprov.erb'),
             order   => $fragment_syncprov,
         }

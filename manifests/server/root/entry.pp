@@ -1,9 +1,9 @@
-# File::      <tt>openldap-server-root-entry.pp</tt>
+# File::      <tt>server/root/entry.pp</tt>
 # Author::    Hyacinthe Cartiaux (<hyacinthe.cartiaux@uni.lu>)
 # Copyright:: Copyright (c) 2011 Hyacinthe Cartiaux
 # License::   GPLv3
 # ------------------------------------------------------------------------------
-# = Define: openldap::server::root-entry
+# = Define: openldap::server::root::entry
 #
 # Create the root entry in your DIT
 # You are expected to use as name when defining this resource the dn of the rootDSE
@@ -24,7 +24,7 @@
 #
 # = Usage:
 #
-#          openldap::server::root-entry { "dc=uni,dc=lu":
+#          openldap::server::root::entry { "dc=uni,dc=lu":
 #                db_number => "1",
 #                dc        => "uni",
 #                o         => "uni",
@@ -38,12 +38,12 @@
 #
 # [Remember: No empty lines between comments and class definition]
 #
-define openldap::server::root-entry(
-    $ensure    = 'present',
-    $db_number = $openldap::params::default_db,
+define openldap::server::root::entry(
     $dc,
     $o,
-    $desc
+    $desc,
+    $ensure    = 'present',
+    $db_number = $openldap::params::default_db
 )
 {
 
@@ -52,11 +52,11 @@ define openldap::server::root-entry(
     $dn = $name
 
     file { "${openldap::params::ldifdir}/root_${dn}.ldif":
-       ensure  => $ensure,
-       owner   => $openldap::params::configfile_owner,
-       group   => $openldap::params::configfile_group,
-       mode    => $openldap::params::configfile_mode,
-       content => template('openldap/ldif/root.ldif.erb')
+      ensure  => $ensure,
+      owner   => $openldap::params::configfile_owner,
+      group   => $openldap::params::configfile_group,
+      mode    => $openldap::params::configfile_mode,
+      content => template('openldap/ldif/root.ldif.erb')
     }
 
     if ($ensure == 'present')

@@ -1,4 +1,4 @@
-# File::      <tt>openldap-server-slapadd.pp</tt>
+# File::      <tt>server/slapadd.pp</tt>
 # Author::    Hyacinthe Cartiaux (<hyacinthe.cartiaux@uni.lu>)
 # Copyright:: Copyright (c) 2011 Hyacinthe Cartiaux
 # License::   GPLv3
@@ -34,28 +34,26 @@
 # [Remember: No empty lines between comments and class definition]
 #
 define openldap::server::slapadd(
+    $ldif_file,
     $db_number         = $openldap::params::default_db,
-    $configfile_server = $openldap::params::configfile_server,
-    $ldif_file
+    $configfile_server = $openldap::params::configfile_server
 )
 {
 
     include openldap::params
 
     exec { "slapadd -f ${configfile_server} -n ${db_number} -l ${ldif_file}":
-      path    => '/sbin:/usr/bin:/usr/sbin:/bin',
-      command => "service slapd stop ; 
-                  slapadd -f ${configfile_server} -n ${db_number} -l ${ldif_file} ;
-                  chown -R ${openldap::params::databasedir_owner}:${openldap::params::databasedir_group} ${openldap::params::databasedir}
-                  touch ${ldif_file}.puppet ; 
-                  service slapd start || true",
-      unless  => "test -f ${ldif_file}.puppet",
-      user    => 'root',
-      group   => 'root',
-#     user    => "${openldap::params::databasedir_owner}",
-#     group   => "${openldap::params::databasedir_group}",
-      require => [ File[$ldif_file],
-                   Concat [$openldap::params::configfile_server],
-                   Service ['openldap']  ],
+        path    => '/sbin:/usr/bin:/usr/sbin:/bin',
+        command => "service slapd stop ;
+                    slapadd -f ${configfile_server} -n ${db_number} -l ${ldif_file} ;
+                    chown -R ${openldap::params::databasedir_owner}:${openldap::params::databasedir_group} ${openldap::params::databasedir}
+                    touch ${ldif_file}.puppet ;
+                    service slapd start || true",
+        unless  => "test -f ${ldif_file}.puppet",
+        user    => 'root',
+        group   => 'root',
+        require => [ File[$ldif_file],
+                     Concat [$openldap::params::configfile_server],
+                     Service ['openldap']  ],
     }
 }

@@ -1,7 +1,7 @@
-# File::      <tt>openldap-params.pp</tt>
-# Author::    Hyacinthe Cartiaux (hyacinthe.cartiaux@uni.lu)
-# Copyright:: Copyright (c) 2011 Hyacinthe Cartiaux
-# License::   GPL v3
+# File::      <tt>params.pp</tt>
+# Author::    S. Varrette, H. Cartiaux, V. Plugaru, S. Diehl aka. UL HPC Management Team (hpc-sysadmins@uni.lu)
+# Copyright:: Copyright (c) 2016 S. Varrette, H. Cartiaux, V. Plugaru, S. Diehl aka. UL HPC Management Team
+# License::   Gpl-3.0
 #
 # ------------------------------------------------------------------------------
 # = Class: openldap::params
@@ -30,89 +30,89 @@ class openldap::params {
     ###########################################
 
     # ensure the presence (or absence) of openldap
-    $ensure = $openldap_ensure ? {
+    $ensure = $::openldap_ensure ? {
         ''      => 'present',
-        default => $openldap_ensure
+        default => $::openldap_ensure
     }
 
-    $ssl = $openldap_ssl ? {
+    $ssl = $::openldap_ssl ? {
         ''      => 'yes',
-        default => $openldap_ssl
+        default => $::openldap_ssl
     }
 
-    $dbname = $openldap_name ? {
+    $dbname = $::openldap_name ? {
         ''      => 'uni.lu',
-        default => $openldap_name
+        default => $::openldap_name
     }
 
-    $suffix = $openldap_suffix ? {
+    $suffix = $::openldap_suffix ? {
         ''      => 'dc=uni,dc=lu',
-        default => $openldap_suffix
+        default => $::openldap_suffix
     }
 
-    $admin_create = $openldap_admin_create ? {
+    $admin_create = $::openldap_admin_create ? {
         ''      => 'yes',
-        default => $openldap_admin_create
+        default => $::openldap_admin_create
     }
 
-    $admin_dn = $openldap_admin_dn ? {
+    $admin_dn = $::openldap_admin_dn ? {
         ''      => 'cn=admin,dc=uni,dc=lu',
-        default => $openldap_admin_dn
+        default => $::openldap_admin_dn
     }
 
-    $admin_pwd = $openldap_admin_pwd ? {
+    $admin_pwd = $::openldap_admin_pwd ? {
         ''      => '/!\\ DEFAULT PASSWORD /!\\',
-        default => $openldap_admin_pwd
+        default => $::openldap_admin_pwd
     }
 
-    $syncprov = $openldap_syncprov ? {
+    $syncprov = $::openldap_syncprov ? {
         ''      => 'no',
-        default => $openldap_syncprov
+        default => $::openldap_syncprov
     }
 
-    $memberof = $openldap_memberof ? {
+    $memberof = $::openldap_memberof ? {
         ''      => 'no',
-        default => $openldap_memberof
+        default => $::openldap_memberof
     }
 
-    $uri = $openldap_uri ? {
+    $uri = $::openldap_uri ? {
         ''      => 'ldap://localhost/',
-        default => $openldap_uri,
+        default => $::openldap_uri,
     }
     # The Protocol used. Used by monitor and firewall class. Default is 'tcp'
-    $protocol = $openldap_protocol ? {
+    $protocol = $::openldap_protocol ? {
         ''      => 'tcp',
-        default => $openldap_protocol,
+        default => $::openldap_protocol,
     }
     # The port number. Used by monitor and firewall class. The default is 22.
-    $port = $openldap_port ? {
+    $port = $::openldap_port ? {
         ''      => 389,
-        default => $openldap_port,
+        default => $::openldap_port,
     }
 
-    $modules = $openldap_modules ? {
+    $modules = $::openldap_modules ? {
         ''      => ['back_ldap', 'back_bdb', 'syncprov', 'memberof'],
-        default => $openldap_modules,
+        default => $::openldap_modules,
     }
 
-    $unix_auth = $openldap_unix_auth ? {
+    $unix_auth = $::openldap_unix_auth ? {
         ''      => 'no',
-        default => $openldap_unix_auth,
+        default => $::openldap_unix_auth,
     }
 
-    $base_passwd = $openldap_base_passwd ? {
+    $base_passwd = $::openldap_base_passwd ? {
         ''      => "ou=People,${suffix}",
-        default => $openldap_base_passwd,
+        default => $::openldap_base_passwd,
     }
 
-    $base_group = $openldap_base_group ? {
+    $base_group = $::openldap_base_group ? {
         ''      => "ou=Groups,${suffix}",
-        default => $openldap_base_group,
+        default => $::openldap_base_group,
     }
 
-    $scope = $openldap_scope ? {
+    $scope = $::openldap_scope ? {
         ''      => 'one',
-        default => $openldap_scope,
+        default => $::openldap_scope,
     }
 
     $default_db = $::operatingsystem ? {
@@ -243,6 +243,4 @@ class openldap::params {
         default => 'openldap',
     }
 
-
 }
-
