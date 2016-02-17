@@ -1,19 +1,19 @@
 #######################################################################
-# Specific Directives for database #<%= db_number %>, of type bdb:
+# Specific Directives for database #<%= @db_number %>, of type bdb:
 # Database specific directives apply to this databasse until another
 # 'database' directive occurs
 database        bdb
 
-# The base of your directory in database #<%= db_number %>
-suffix          "<%= suffix %>"
+# The base of your directory in database #<%= @db_number %>
+suffix          "<%= @suffix %>"
 
 # rootdn directive for specifying a superuser on the database. This is needed
 # for syncrepl.
-rootdn          "<%= admin_dn %>"
-rootpw          "<%= hashed_password %>"
+rootdn          "<%= @admin_dn %>"
+rootpw          "<%= @hashed_password %>"
 
 # Where the database file are physically stored for database #1
-directory       "/var/lib/ldap/<%= name %>"
+directory       "/var/lib/ldap/<%= @name %>"
 
 # For the Debian package we use 2MB as default but be sure to update this
 # value if you have plenty of RAM
@@ -34,7 +34,7 @@ index   entryCSN,entryUUID                              eq
 # failure and to speed slapd shutdown.
 checkpoint      10 10
 
-<% if memberof == "yes" %>
+<% if @memberof == "yes" %>
 # Enable the overlay "memberof"
 # http://www.openldap.org/doc/admin24/overlays.html#Reverse%20Group%20Membership%20Maintenance
 overlay memberof

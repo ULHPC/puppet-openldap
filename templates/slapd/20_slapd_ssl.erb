@@ -1,4 +1,4 @@
-<% if ssl == "yes" -%>
+<% if scope.lookupvar('openldap::server::ssl') == "yes" -%>
 # TLS
 
 # TLSCipherSuite HIGH # debian package is compiled with gnutls, 
