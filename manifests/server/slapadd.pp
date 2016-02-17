@@ -52,8 +52,9 @@ define openldap::server::slapadd(
         unless  => "test -f ${ldif_file}.puppet",
         user    => 'root',
         group   => 'root',
-        require => [ File[$ldif_file],
-                     Concat [$openldap::params::configfile_server],
-                     Service ['openldap']  ],
+        require => [  File[$ldif_file],
+                      Concat [$openldap::params::configfile_server],
+                      Service ['openldap']
+                    ],
     }
 }

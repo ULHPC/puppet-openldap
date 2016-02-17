@@ -15,7 +15,7 @@
 
 include 'openldap::params'
 
-$names = ["ensure", "ssl", "dbname", "suffix", "admin_create", "admin_dn", "admin_pwd", "syncprov", "memberof", "uri", "protocol", "port", "modules", "unix_auth", "base_passwd", "base_group", "scope", "default_db", "salt", "cert_directory", "packagename_server", "packagename_client", "packagename_unix_auth", "servicename", "processname", "hasstatus", "hasrestart", "configfile_server", "configdir_schema", "configfile_client", "configfile_client_alternate", "configfile_pam", "configfile_nss", "ldifdir", "configfile_mode", "configdir_schema_mode", "configfile_group", "configfile_owner", "configfile_client_mode", "configfile_client_group", "configfile_client_owner", "databasedir", "databasedir_mode", "databasedir_owner", "databasedir_group"]
+$names = ['ensure', 'ssl', 'dbname', 'suffix', 'admin_create', 'admin_dn', 'admin_pwd', 'syncprov', 'memberof', 'uri', 'protocol', 'port', 'modules', 'unix_auth', 'base_passwd', 'base_group', 'scope', 'default_db', 'salt', 'cert_directory', 'packagename_server', 'packagename_client', 'packagename_unix_auth', 'servicename', 'processname', 'hasstatus', 'hasrestart', 'configfile_server', 'configdir_schema', 'configfile_client', 'configfile_client_alternate', 'configfile_pam', 'configfile_nss', 'ldifdir', 'configfile_mode', 'configdir_schema_mode', 'configfile_group', 'configfile_owner', 'configfile_client_mode', 'configfile_client_group', 'configfile_client_owner', 'databasedir', 'databasedir_mode', 'databasedir_owner', 'databasedir_group']
 
 notice("openldap::params::ensure = ${openldap::params::ensure}")
 notice("openldap::params::ssl = ${openldap::params::ssl}")

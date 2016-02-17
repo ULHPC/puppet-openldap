@@ -27,21 +27,27 @@ node default {
 
     openldap::server::acl { 'password and ssh public key':
         what      => 'attrs="userPassword,shadowLastChange,sshPublicKey"',
-        who       => {'cn=admin,dc=uni,dc=lu' => 'write',
-                      'self'                  => 'write' },
+        who       => {
+                        'cn=admin,dc=uni,dc=lu' => 'write',
+                        'self'                  => 'write'
+                    },
         anonymous => 'no',
         order     => 1
     }
     openldap::server::acl { 'personnal data':
         what      => 'attrs="loginShell,jpegPhoto,mail,telephoneNumber"',
-        who       => {'cn=admin,dc=uni,dc=lu' => 'write',
-                      'self'                  => 'write' },
+        who       => {
+                        'cn=admin,dc=uni,dc=lu' => 'write',
+                        'self'                  => 'write'
+                    },
         anonymous => 'yes',
         order     => 2
     }
     openldap::server::acl { 'entire tree':
         what      => '*',
-        who       => { 'cn=admin,dc=uni,dc=lu' => 'write' },
+        who       => {
+                        'cn=admin,dc=uni,dc=lu' => 'write'
+                    },
         anonymous => 'yes',
         order     => 3
     }
