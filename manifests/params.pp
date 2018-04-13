@@ -143,7 +143,8 @@ class openldap::params {
                                     'libpam-ldap'],
         /(?i-mx:centos|redhat)/ => $::lsbmajdistrelease ? {
                                     '5' => 'nss_ldap',
-                                    '6' => 'nss-pam-ldapd'
+                                    '6' => 'nss-pam-ldapd',
+                                    '7' => 'nss-pam-ldapd'
         },
         default                 => 'nss-ldap-ldapd',
     }
