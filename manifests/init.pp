@@ -9,6 +9,6 @@
 # Configure and manage openldap
 #
 class openldap inherits openldap::params {
-  contain openldap::server
-  contain openldap::client
+  contain ::openldap::server
+  contain ::openldap::client
 }

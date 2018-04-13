@@ -47,7 +47,7 @@ define openldap::server::root::entry(
 )
 {
 
-    include openldap::params
+    include ::openldap::params
 
     $dn = $name
 
@@ -56,7 +56,7 @@ define openldap::server::root::entry(
       owner   => $openldap::params::configfile_owner,
       group   => $openldap::params::configfile_group,
       mode    => $openldap::params::configfile_mode,
-      content => template('openldap/ldif/root.ldif.erb')
+      content => template('openldap/ldif/root.ldif.erb'),
     }
 
     if ($ensure == 'present')
@@ -64,7 +64,7 @@ define openldap::server::root::entry(
         openldap::server::slapadd { "slapadd ${openldap::params::ldifdir}/root_${dn}.ldif":
           db_number         => $db_number,
           configfile_server => $openldap::params::configfile_server,
-          ldif_file         => "${openldap::params::ldifdir}/root_${dn}.ldif"
+          ldif_file         => "${openldap::params::ldifdir}/root_${dn}.ldif",
         }
     }
 }

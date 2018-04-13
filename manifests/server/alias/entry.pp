@@ -40,7 +40,7 @@ define openldap::server::alias::entry(
 )
 {
 
-    include openldap::params
+    include ::openldap::params
 
     $dn = $name
     $attr = regsubst($dn,'^([^=]*)=.*$','\1')
@@ -51,7 +51,7 @@ define openldap::server::alias::entry(
       owner   => $openldap::params::configfile_owner,
       group   => $openldap::params::configfile_group,
       mode    => $openldap::params::configfile_mode,
-      content => template('openldap/ldif/alias.ldif.erb')
+      content => template('openldap/ldif/alias.ldif.erb'),
     }
 
     if ($ensure == 'present')
@@ -60,7 +60,7 @@ define openldap::server::alias::entry(
         db_number         => $db_number,
         configfile_server => $openldap::params::configfile_server,
         ldif_file         => "${openldap::params::ldifdir}/alias_${dn}.ldif",
-        require           => Openldap::Server::Root::Entry[$openldap::server::suffix]
+        require           => Openldap::Server::Root::Entry[$openldap::server::suffix],
       }
     }
 }

@@ -92,8 +92,8 @@ class openldap::client (
 #    }
 
     case $::operatingsystem {
-        debian, ubuntu: { include openldap::client::common::debian }
-        redhat, centos: { include openldap::client::common::redhat }
+        'debian', 'ubuntu': { include ::openldap::client::common::debian }
+        'redhat', 'centos': { include ::openldap::client::common::redhat }
         default: {
             fail("Module ${module_name} is not supported on ${::operatingsystem}")
         }

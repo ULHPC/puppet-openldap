@@ -45,7 +45,7 @@ define openldap::server::ou::entry(
 )
 {
 
-    include openldap::params
+    include ::openldap::params
 
     $dn = $name
 
@@ -54,7 +54,7 @@ define openldap::server::ou::entry(
       owner   => $openldap::params::configfile_owner,
       group   => $openldap::params::configfile_group,
       mode    => $openldap::params::configfile_mode,
-      content => template('openldap/ldif/ou.ldif.erb')
+      content => template('openldap/ldif/ou.ldif.erb'),
     }
 
     if ($ensure == 'present')
@@ -63,7 +63,7 @@ define openldap::server::ou::entry(
         db_number         => $db_number,
         configfile_server => $openldap::params::configfile_server,
         ldif_file         => "${openldap::params::ldifdir}/ou_${dn}.ldif",
-        require           => Openldap::Server::Root::Entry[$openldap::server::suffix]
+        require           => Openldap::Server::Root::Entry[$openldap::server::suffix],
       }
     }
 }

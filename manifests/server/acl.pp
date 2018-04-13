@@ -52,7 +52,7 @@ define openldap::server::acl(
 )
 {
 
-    include openldap::params
+    include ::openldap::params
 
     if ! ( $anonymous in [ 'yes', 'no' ]) {
         fail("openldap::server::acl 'anonymous' parameter must be set to either 'yes' or 'no'")

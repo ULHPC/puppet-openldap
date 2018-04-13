@@ -62,7 +62,7 @@ define openldap::server::sync::consumer(
 )
 {
 
-    include openldap::params
+    include ::openldap::params
 
     if ( $use_ssl == 'yes' and
 #             $openldap::server::use_ssl               == 'yes' and

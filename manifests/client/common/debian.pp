@@ -19,6 +19,6 @@ class openldap::client::common::debian inherits openldap::client::common {
         changes => [
             'rm argument[1]',
         ],
-        onlyif  => 'get argument[1] == "use_authtok"'
+        onlyif  => 'get argument[1] == "use_authtok"',
     }
 }

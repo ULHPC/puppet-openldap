@@ -18,7 +18,7 @@
 class openldap::client::common {
 
     # Load the variables used in this module. Check the openldap-params.pp file
-    require openldap::params
+    require ::openldap::params
 
     package { $openldap::params::packagename_client:
         ensure => $openldap::client::ensure,
@@ -45,7 +45,7 @@ class openldap::client::common {
             group   => $openldap::params::configfile_client_group,
             mode    => $openldap::params::configfile_client_mode,
             source  => $openldap::client::ssl_cacertfile_source,
-            require => File[$openldap::params::cert_directory]
+            require => File[$openldap::params::cert_directory],
         }
 
     }

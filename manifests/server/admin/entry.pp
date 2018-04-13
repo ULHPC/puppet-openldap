@@ -49,7 +49,7 @@ define openldap::server::admin::entry(
 )
 {
 
-    include openldap::params
+    include ::openldap::params
 
     $dn = $name
     $hashed_password = slappasswd($openldap::server::salt, $admin_pwd)
@@ -59,7 +59,7 @@ define openldap::server::admin::entry(
       owner   => $openldap::params::configfile_owner,
       group   => $openldap::params::configfile_group,
       mode    => $openldap::params::configfile_mode,
-      content => template('openldap/ldif/admin.ldif.erb')
+      content => template('openldap/ldif/admin.ldif.erb'),
     }
     if ($ensure == 'present')
     {
@@ -67,7 +67,7 @@ define openldap::server::admin::entry(
           db_number         => $db_number,
           configfile_server => $openldap::params::configfile_server,
           ldif_file         => "${openldap::params::ldifdir}/admin_${dn}.ldif",
-          require           => Openldap::Server::Root::Entry[$openldap::server::suffix]
+          require           => Openldap::Server::Root::Entry[$openldap::server::suffix],
         }
     }
 }

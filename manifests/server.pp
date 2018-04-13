@@ -112,7 +112,7 @@ class openldap::server(
     }
 
     case $::operatingsystem {
-        debian, ubuntu:         { include openldap::server::common::debian }
+        'debian', 'ubuntu':         { include ::openldap::server::common::debian }
         default: {
             fail("Module ${module_name} is not supported on ${::operatingsystem}")
         }

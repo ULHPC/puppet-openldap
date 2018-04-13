@@ -40,7 +40,7 @@ define openldap::server::slapadd(
 )
 {
 
-    include openldap::params
+    include ::openldap::params
 
     exec { "slapadd -f ${configfile_server} -n ${db_number} -l ${ldif_file}":
         path    => '/sbin:/usr/bin:/usr/sbin:/bin',

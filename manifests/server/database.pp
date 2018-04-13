@@ -60,7 +60,7 @@ define openldap::server::database(
 )
 {
 
-    include openldap::params
+    include ::openldap::params
 
     if (! $suffix) {
         fail("openldap::server::database 'suffix' parameter must not be empty")
@@ -90,13 +90,13 @@ define openldap::server::database(
         ensure  => $openldap::server::ensure,
         owner   => $openldap::params::configfile_owner,
         mode    => $openldap::params::configfile_mode,
-        content => $admin_pwd
+        content => $admin_pwd,
     }
     file { "/root/.openldap_admindn_${name}":
         ensure  => $openldap::server::ensure,
         owner   => $openldap::params::configfile_owner,
         mode    => $openldap::params::configfile_mode,
-        content => $admin_dn
+        content => $admin_dn,
     }
 
 

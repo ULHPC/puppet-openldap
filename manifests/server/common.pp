@@ -12,7 +12,7 @@
 class openldap::server::common {
 
     # Load the variables used in this module. Check the openldap-params.pp file
-    require openldap::params
+    require ::openldap::params
 
     package { $openldap::params::packagename_server:
         ensure => $openldap::server::ensure,
@@ -23,14 +23,11 @@ class openldap::server::common {
         ensure    => running,
         name      => $openldap::params::servicename,
         enable    => true,
-#       hasrestart => "${openldap::params::hasrestart}",
-#       pattern    => "${openldap::params::processname}",
-#       hasstatus  => "${openldap::params::hasstatus}",
         require   => [  Package[ $openldap::params::packagename_server ],
                         Concat [ $openldap::params::configfile_server  ],
                         File   ["${openldap::params::databasedir}/${openldap::server::db_name}"]
                       ],
-        subscribe => File[$openldap::params::configfile_server]
+        subscribe => File[$openldap::params::configfile_server],
     }
 
     # SSH PUB KEY SCHEMAS
@@ -78,7 +75,7 @@ class openldap::server::common {
         $openldap::server::ssl_keyfile_source    == ''    and
         $openldap::server::ssl_cacertfile_source == ''     )
     {
-        include 'openssl'
+        include '::openssl'
         $ssl_cacertfile = $openssl::params::default_ssl_cacert
 
         # generate certificates
@@ -90,7 +87,7 @@ class openldap::server::common {
             group      => $openldap::params::databasedir_group,
             email      => 'csc-sysadmins@uni.lu',
             basedir    => $openldap::params::cert_directory,
-            require    => File[$openldap::params::cert_directory]
+            require    => File[$openldap::params::cert_directory],
         }
 
     }
@@ -108,7 +105,7 @@ class openldap::server::common {
             group   => $openldap::params::databasedir_group,
             mode    => '0644',
             source  => $openldap::server::ssl_certfile_source,
-            require => File[$openldap::params::cert_directory]
+            require => File[$openldap::params::cert_directory],
         }
         # The associated keyfile should have been passed too...
         file { $ssl_keyfile:
@@ -117,7 +114,7 @@ class openldap::server::common {
             group   => $openldap::params::databasedir_group,
             mode    => '0600',
             source  => $openldap::server::ssl_keyfile_source,
-            require => File[$openldap::params::cert_directory]
+            require => File[$openldap::params::cert_directory],
         }
         file { $ssl_cacertfile:
             ensure  => 'file',
@@ -125,7 +122,7 @@ class openldap::server::common {
             group   => $openldap::params::databasedir_group,
             mode    => '0600',
             source  => $openldap::server::ssl_cacertfile_source,
-            require => File[$openldap::params::cert_directory]
+            require => File[$openldap::params::cert_directory],
         }
 
     }
@@ -150,7 +147,7 @@ class openldap::server::common {
         admin_dn  => $openldap::server::admin_dn,
         admin_pwd => $openldap::server::admin_pwd,
         syncprov  => $openldap::server::syncprov,
-        memberof  => $openldap::server::memberof
+        memberof  => $openldap::server::memberof,
     }
 
     # LDIF DIRECTORY / needed for definitions which use slapadd
@@ -185,7 +182,7 @@ class openldap::server::common {
             cn        => $cn,
             desc      => 'Administrator of this ldap server',
             admin_pwd => $openldap::server::admin_pwd,
-            require   => Openldap::Server::Root::Entry[$openldap::server::suffix]
+            require   => Openldap::Server::Root::Entry[$openldap::server::suffix],
         }
     }
 
