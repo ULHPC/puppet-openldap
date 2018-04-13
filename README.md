@@ -9,7 +9,7 @@
 
 Configure and manage openldap
 
-      Copyright (c) 2016 S. Varrette, H. Cartiaux, V. Plugaru, S. Diehl aka. UL HPC Management Team <hpc-sysadmins@uni.lu>
+      Copyright (c) 2018 UL HPC Team <hpc-sysadmins@uni.lu>
       
 
 | [Project Page](https://github.com/ULHPC/puppet-openldap) | [Sources](https://github.com/ULHPC/puppet-openldap) | [Documentation](https://ulhpc-puppet-openldap.readthedocs.org/en/latest/) | [Issues](https://github.com/ULHPC/puppet-openldap/issues) |
