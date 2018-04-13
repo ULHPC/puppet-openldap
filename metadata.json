@@ -1,7 +1,7 @@
 {
   "name": "ULHPC/openldap",
   "version": "0.2.1",
-  "author": "S. Varrette, H. Cartiaux, V. Plugaru, S. Diehl aka. UL HPC Management Team",
+  "author": "UL HPC Team",
   "mail": "hpc-sysadmins@uni.lu",
   "summary": "Configure and manage openldap",
   "description": "Configure and manage openldap",
